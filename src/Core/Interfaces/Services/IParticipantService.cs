@@ -9,7 +9,6 @@ namespace Core.Interfaces.Services
 {
     public interface IParticipantService
     {
-        Task<IResult> SendInvitationAsync(int organizerId, int eventId, List<int> userIds);
 
     }
 }

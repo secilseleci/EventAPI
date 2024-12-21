@@ -17,7 +17,8 @@ namespace Core.Entities
 
         public List<Event> OrganizedEvents { get; set; } = new();
         public List<Participant> ParticipatedEvents { get; set; } = new();
-        public List<Invitation> SentInvitations { get; set; }= new ();
+        public List<Invitation> SentInvitations { get; set; } = new();
         public List<Invitation> ReceivedInvitations { get; set; } = new();
+
     }
 }

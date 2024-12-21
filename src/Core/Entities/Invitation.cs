@@ -1,4 +1,5 @@
 ﻿using Core.Interfaces.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace Core.Entities
 {
@@ -12,12 +13,13 @@ namespace Core.Entities
         public string Message { get; set; }=string.Empty;
         public bool IsAccepted { get; set; } = false;
 
-        public Event Event { get; set; } = new();
+        public Event Event { get; set; } = null!;
         public Guid EventId { get; set; }
 
-        public User Organizer { get; set; } = new();
+        public User Organizer { get; set; } = null!;
         public Guid OrganizerId { get; set; }
-        public User Receiver { get; set; } = new();
+
+        public User Receiver { get; set; } = null!;
         public Guid ReceiverId { get; set; }
     }
 }

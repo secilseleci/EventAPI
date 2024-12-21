@@ -1,18 +1,10 @@
 ﻿using AutoMapper;
+using Core.DTOs.Invitation;
 using Core.Entities;
-using Core.Interfaces.Entities;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Utilities.Constants;
 using Core.Utilities.Results;
-using Infrastructure.Repositories.Implementations;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Services
 {
@@ -22,6 +14,65 @@ namespace Infrastructure.Services
         IUserService _userService,
         IEventRepository _eventRepository) : IInvitationService
     {
+
+        public async Task<IDataResult<IEnumerable<InvitationDto>>> GetReceivedInvitationsAsync(Guid userId, CancellationToken cancellationToken)
+        {
+            var isValidUser=await _userService.IsUserValidAsync(userId, cancellationToken);
+            if (isValidUser == false)
+                return new ErrorDataResult<IEnumerable<InvitationDto>>(Messages.UserNotFound);
+            var invitationList=await _invitationRepository.GetAllAsync(i=>i.ReceiverId == userId);
+
+            return invitationList is not null && invitationList.Any()
+              ? new SuccessDataResult<IEnumerable<InvitationDto>>(_mapper.Map<IEnumerable<InvitationDto>>(invitationList))
+              : new ErrorDataResult<IEnumerable<InvitationDto>>(Messages.EmptyInvitationList);
+        }
+
+        public async Task<IDataResult<IEnumerable<InvitationDto>>> GetSentInvitationsAsync(Guid userId, CancellationToken cancellationToken)
+        {
+            var isValidUser = await _userService.IsUserValidAsync(userId, cancellationToken);
+            if (isValidUser == false)
+                return new ErrorDataResult<IEnumerable<InvitationDto>>(Messages.UserNotFound);
+            var invitationList = await _invitationRepository.GetAllAsync(i => i.OrganizerId == userId);
+
+            return invitationList is not null && invitationList.Any()
+              ? new SuccessDataResult<IEnumerable<InvitationDto>>(_mapper.Map<IEnumerable<InvitationDto>>(invitationList))
+              : new ErrorDataResult<IEnumerable<InvitationDto>>(Messages.EmptyInvitationList);
+        }
+
+        public async Task<IDataResult<InvitationDto?>> GetSingleInvitationAsync(Guid receiverId, Guid eventId, CancellationToken cancellationToken)
+        {
+            var isValidUser = await _userService.IsUserValidAsync(receiverId, cancellationToken);
+            if (isValidUser == false)
+                return new ErrorDataResult<InvitationDto?>(Messages.UserNotFound);
+
+            var invitationEntity = await _invitationRepository.GetInvitationByEventAndReceiverAsync(eventId, receiverId);
+            return invitationEntity is null
+               ? new ErrorDataResult<InvitationDto?>(Messages.InvitationNotFound)
+                : new SuccessDataResult<InvitationDto?>(Messages.InvitationRetrievedSuccessfully);
+
+
+        }
+
+        public async Task<IResult> ParticipateInvitationAsync(Guid receiverId, Guid eventId, CancellationToken cancellationToken)
+        {
+            var isValidUser = await _userService.IsUserValidAsync(receiverId, cancellationToken);
+
+            if (isValidUser == false)
+                return new ErrorResult(Messages.UserNotFound);
+
+            var invitationResult = await GetSingleInvitationAsync(receiverId, eventId, cancellationToken);
+            if (!invitationResult.Success)
+                return new ErrorResult(invitationResult.Message);
+
+            var invitation = _mapper.Map<Invitation>(invitationResult.Data);
+            invitation.IsAccepted = true;
+
+            var updateResult = await _invitationRepository.UpdateAsync(invitation);
+            return updateResult > 0
+                ? new SuccessResult(Messages.InvitationAcceptedSuccessfully)
+                : new ErrorResult(Messages.UpdateInvitationError);
+        }        
+
         public async Task<IResult> SendInvitationAsync(Guid organizerId, Guid eventId, List<Guid> userIds, CancellationToken cancellationToken)
         {
             // Kullanıcı doğrulaması
@@ -38,7 +89,7 @@ namespace Infrastructure.Services
             if (eventEntity.OrganizerId != organizerId)
                 return new ErrorResult(Messages.UnauthorizedAccess);
 
-            // Kullanıcıların geçerliliğini kontrol et
+            // Kullanıcıların geçerliliğini kontrol  
             var validUserIds = new List<Guid>();
             foreach (var userId in userIds)
             {

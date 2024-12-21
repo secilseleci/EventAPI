@@ -6,5 +6,5 @@ namespace Core.DTOs.Participant
     {
         public Guid UserId { get; set; }  
         public string UserName { get; set; } = string.Empty;  
-    }
+     }
 }

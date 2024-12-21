@@ -1,7 +1,10 @@
-﻿using Core.Entities;
+﻿using Core.DTOs;
+using Core.Entities;
 using Core.Interfaces.Repositories;
 using Infrastructure.Repositories.Implementations;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Memory;
+using System;
 using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories.Cache
@@ -55,8 +58,17 @@ namespace Infrastructure.Repositories.Cache
                 return await _decorated.GetByIdAsync(id);
             });
         }
+        public async Task<PaginationDto<Event>?> GetAllEventsWithPaginationAsync(int page, int pageSize)
+        {
+            string key = $"events-page-{page}-size-{pageSize}";
+            return await _cache.GetOrCreateAsync(key, async entry =>
+            {
+                CachedKeys.Add(key);
+                entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(3));
+                return await _decorated.GetAllEventsWithPaginationAsync(page, pageSize);
+            });
+        }
 
-        
         public async Task<Event?> GetEventWithParticipantsAsync(Guid eventId)
         {
             string key = $"with-participants-{eventId}";
@@ -93,6 +105,10 @@ namespace Infrastructure.Repositories.Cache
         }
 
        
+
+       
+
+
 
 
         #endregion

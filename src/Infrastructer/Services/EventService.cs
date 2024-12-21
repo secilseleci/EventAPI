@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Core.DTOs;
 using Core.DTOs.Event;
 using Core.Entities;
 using Core.Interfaces.Repositories;
@@ -14,7 +15,7 @@ namespace Infrastructure.Services
         IMapper _mapper,
         IUserService _userService) : IEventService
     {
-         #region Create
+        #region Create
         public async Task<IResult> CreateEventAsync(CreateEventDto createEventDto, Guid userId, CancellationToken cancellationToken)
         {
              var isValidUser=await _userService.IsUserValidAsync(userId,cancellationToken);
@@ -85,6 +86,26 @@ namespace Infrastructure.Services
                 ? new SuccessDataResult<ViewEventDto> (_mapper.Map<ViewEventDto>(eventEntity))
                 : new ErrorDataResult<ViewEventDto>(Messages.EventNotFound);
         }
+        public async Task<IDataResult<PaginationDto<ViewEventDto>>> GetAllEventsWithPaginationAsync(
+        int page, int pageSize, CancellationToken cancellationToken)
+        {
+            var eventsWithPagination = await _eventRepository.GetAllEventsWithPaginationAsync(page, pageSize);
+
+            if (eventsWithPagination.Data.Any())
+            {
+                return new SuccessDataResult<PaginationDto<ViewEventDto>>(
+                    new PaginationDto<ViewEventDto>
+                    {
+                        Data = _mapper.Map<IEnumerable<ViewEventDto>>(eventsWithPagination.Data),
+                        CurrentPage = eventsWithPagination.CurrentPage,
+                        TotalPages = eventsWithPagination.TotalPages,
+                        PageSize = eventsWithPagination.PageSize,
+                        TotalCount = eventsWithPagination.TotalCount
+                    });
+            }
+
+            return new ErrorDataResult<PaginationDto<ViewEventDto>>(Messages.EmptyEventList);
+        }
 
         public async Task<IDataResult<ViewEventWithParticipantsDto>> GetEventWithParticipantsAsync(Guid eventId, CancellationToken cancellationToken)
         {
@@ -96,9 +117,15 @@ namespace Infrastructure.Services
                 ? new ErrorDataResult<ViewEventWithParticipantsDto>(Messages.EmptyParticipantList)
                 : new SuccessDataResult<ViewEventWithParticipantsDto>(_mapper.Map<ViewEventWithParticipantsDto>(eventEntity));
         }
-        public async Task<IDataResult<IEnumerable<ViewEventDto>>> GetEventListByDateRangeAsync(Guid userId, DateTimeOffset startDate, DateTimeOffset endDate, CancellationToken cancellationToken)
+        public async Task<IDataResult<IEnumerable<ViewEventDto>>> GetEventListByDateRangeAsync( DateTimeOffset startDate, DateTimeOffset endDate, CancellationToken cancellationToken)
         {
+            if (startDate > endDate)
+            {
+                return new ErrorDataResult<IEnumerable<ViewEventDto>>("Start date cannot be later than end date.");
+            }
+
             var eventList = await _eventRepository.GetAllAsync(e => e.StartDate <= endDate && e.EndDate >= startDate);
+
             return eventList is not null && eventList.Any()
                    ? new SuccessDataResult<IEnumerable<ViewEventDto>>(_mapper.Map<IEnumerable<ViewEventDto>>(eventList), Messages.EventsRetrievedSuccessfully)
                    : new ErrorDataResult<IEnumerable<ViewEventDto>>(Messages.EmptyEventList);
@@ -130,7 +157,7 @@ namespace Infrastructure.Services
         }
         public async Task<IDataResult<int>> GetParticipantCountForEventAsync(Guid eventId, CancellationToken cancellationToken)
         {
-            var participantCount = await _eventRepository.GetParticipantCountAsync(eventId, cancellationToken);
+            var participantCount = await _eventRepository.GetParticipantCountAsync(eventId);
 
             return participantCount >= 0
          ? new SuccessDataResult<int>(participantCount,Messages.ParticipantCountRetrievedSuccessfully)
@@ -151,7 +178,10 @@ namespace Infrastructure.Services
             eventEntity.Timezone = updateEventDto.Timezone;
         }
 
-        
         #endregion
+        
+
+
+
     }
 }

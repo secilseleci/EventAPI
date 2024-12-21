@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(EventApiDbContext))]
-    [Migration("20241206103828_Init")]
-    partial class Init
+    [Migration("20241218135856_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -60,6 +60,30 @@ namespace Infrastructure.Migrations
                     b.HasIndex("OrganizerId");
 
                     b.ToTable("Events");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"),
+                            EndDate = new DateTimeOffset(new DateTime(2025, 2, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            EventDescription = "Celebrate our team leader's 40th birthday!",
+                            EventName = "Team Birthday Party",
+                            Location = "Istanbul",
+                            OrganizerId = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
+                            StartDate = new DateTimeOffset(new DateTime(2025, 2, 1, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Timezone = "UTC"
+                        },
+                        new
+                        {
+                            Id = new Guid("5dc9ba5e-53c0-4166-87de-5f6f57021256"),
+                            EndDate = new DateTimeOffset(new DateTime(2025, 2, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            EventDescription = "Kickoff meeting for the new project.",
+                            EventName = "Project Kickoff Meeting",
+                            Location = "Ankara",
+                            OrganizerId = new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db"),
+                            StartDate = new DateTimeOffset(new DateTime(2025, 2, 1, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Timezone = "UTC"
+                        });
                 });
 
             modelBuilder.Entity("Core.Entities.Invitation", b =>
@@ -93,21 +117,61 @@ namespace Infrastructure.Migrations
                     b.HasIndex("ReceiverId");
 
                     b.ToTable("Invitations");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("2a5b59a3-d486-4b8b-b0e4-3fb27cf8b85b"),
+                            EventId = new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"),
+                            IsAccepted = false,
+                            Message = "Join us for the birthday party!",
+                            OrganizerId = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
+                            ReceiverId = new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db")
+                        },
+                        new
+                        {
+                            Id = new Guid("3b5c59a3-d486-4b8b-b0e4-3fb27cf8b85b"),
+                            EventId = new Guid("5dc9ba5e-53c0-4166-87de-5f6f57021256"),
+                            IsAccepted = false,
+                            Message = "Kickoff meeting invitation",
+                            OrganizerId = new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db"),
+                            ReceiverId = new Guid("b12f1fc3-a9e7-4b53-90a7-0b2e1e7d3a12")
+                        });
                 });
 
             modelBuilder.Entity("Core.Entities.Participant", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("EventId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id", "EventId");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("EventId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Participants");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("cb8808c1-341e-4154-8bac-6f48719968f8"),
+                            EventId = new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"),
+                            UserId = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479")
+                        },
+                        new
+                        {
+                            Id = new Guid("f6521606-69f8-4887-a5c9-963ca57257f6"),
+                            EventId = new Guid("5dc9ba5e-53c0-4166-87de-5f6f57021256"),
+                            UserId = new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db")
+                        });
                 });
 
             modelBuilder.Entity("Core.Entities.User", b =>
@@ -135,6 +199,40 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
+                            Email = "secil@example.com",
+                            FullName = "Seçil Seleci",
+                            Password = "",
+                            UserName = "secilSeleci"
+                        },
+                        new
+                        {
+                            Id = new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db"),
+                            Email = "hasan@example.com",
+                            FullName = "Hasan Yüksel",
+                            Password = "",
+                            UserName = "hasanYuksel"
+                        },
+                        new
+                        {
+                            Id = new Guid("b12f1fc3-a9e7-4b53-90a7-0b2e1e7d3a12"),
+                            Email = "eda@example.com",
+                            FullName = "Eda Mayalı",
+                            Password = "",
+                            UserName = "edaMayali"
+                        },
+                        new
+                        {
+                            Id = new Guid("9c24e2f7-52b1-4f78-8dce-3ae146b7f9d5"),
+                            Email = "gokhan@example.com",
+                            FullName = "Gökhan Bilir",
+                            Password = "",
+                            UserName = "gokhanBilir"
+                        });
                 });
 
             modelBuilder.Entity("Core.Entities.Event", b =>
@@ -151,7 +249,7 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Core.Entities.Invitation", b =>
                 {
                     b.HasOne("Core.Entities.Event", "Event")
-                        .WithMany()
+                        .WithMany("Invitations")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -159,13 +257,13 @@ namespace Infrastructure.Migrations
                     b.HasOne("Core.Entities.User", "Organizer")
                         .WithMany("SentInvitations")
                         .HasForeignKey("OrganizerId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Core.Entities.User", "Receiver")
                         .WithMany("ReceivedInvitations")
                         .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Event");
@@ -185,8 +283,8 @@ namespace Infrastructure.Migrations
 
                     b.HasOne("Core.Entities.User", "User")
                         .WithMany("ParticipatedEvents")
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Event");
@@ -196,6 +294,8 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Core.Entities.Event", b =>
                 {
+                    b.Navigation("Invitations");
+
                     b.Navigation("Participants");
                 });
 

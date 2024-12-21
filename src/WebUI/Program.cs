@@ -1,5 +1,6 @@
 using Infrastructure.ExtensionMethods;
 using Serilog;
+using WebUI.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,10 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 builder.Services.ConfigureDatabase(builder.Configuration);
 
 builder.Configuration.AddAppSettings();
- 
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+builder.Services.AddProblemDetails();
 builder.Host.UseSerilog((_, config) => config
     .ReadFrom.Configuration(builder.Configuration)); 
 
@@ -21,12 +24,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseExceptionHandler();
+
+app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
-app.UseSerilogRequestLogging();
 
 app.UseAuthorization();
 
 app.MapControllers();
-
+await app.EnsureDatabaseCreated();
 app.Run();

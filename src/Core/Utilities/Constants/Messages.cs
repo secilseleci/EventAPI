@@ -32,7 +32,11 @@ namespace Core.Utilities.Constants
         public const string DeleteInvitationSuccess = "Invitation deleted succesfully";
         public const string DeleteInvitationError = "Error occured while deleting the Invitation in Database";
         public const string InvitationsRetrievedSuccessfully = "Invitations retrieved successfully";
+        public const string InvitationRetrievedSuccessfully = "Invitation retrieved successfully";
         public const string InvitationsSentSuccessfully = "Invitations sent successfully";
+        public const string InvitationAlreadyAccepted = "Invitation already accepted"; 
+        public const string InvitationAcceptedSuccessfully = "Invitation accepted successfully";
+
         public const string AllUsersAlreadyInvited = "All users already invited";
         #endregion
 

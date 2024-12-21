@@ -56,7 +56,17 @@ namespace Infrastructure.Repositories.Cache
             });
         }
 
-        
+        public async Task<Invitation?> GetInvitationByEventAndReceiverAsync(Guid eventId, Guid receiverId)
+        {
+            string key = $"invitation-{eventId}-{receiverId}";
+            return await _cache.GetOrCreateAsync(key, async entry =>
+            {
+                CachedKeys.Add(key);
+                entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(3));
+                return await _decorated.GetInvitationByEventAndReceiverAsync(eventId,receiverId);
+            });
+        }
+
 
         #region Helper Methods
         private void RemoveAllCachedItems(int result)
@@ -71,6 +81,8 @@ namespace Infrastructure.Repositories.Cache
 
             CachedKeys.Clear();
         }
-        #endregion  
+
+      
+        #endregion
     }
 }

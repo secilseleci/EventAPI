@@ -19,9 +19,9 @@ namespace Core.Entities
 
         public string Location { get; set; } = string.Empty;
 
-        // Organizer ile ilişki
-        public Guid OrganizerId { get; set; }    
-        public User Organizer { get; set; } = null!;  
+        public Guid OrganizerId { get; set; }
+        public User Organizer { get; set; } = null!;
         public List<Participant> Participants { get; set; } = new();
+        public List<Invitation> Invitations { get; set; } = new();
     }
 }
