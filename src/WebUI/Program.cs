@@ -9,11 +9,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.ConfigureDatabase(builder.Configuration);
-
 builder.Configuration.AddAppSettings();
+builder.Services.AddInfrastructure(builder.Configuration);
+
+
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 builder.Services.AddProblemDetails();
+
 builder.Host.UseSerilog((_, config) => config
     .ReadFrom.Configuration(builder.Configuration)); 
 
@@ -28,7 +30,6 @@ app.UseExceptionHandler();
 
 app.UseSerilogRequestLogging();
 
-app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

@@ -38,7 +38,7 @@ namespace WebUI.Controllers
             return HandleResponse(eventResult);
         }
 
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<IActionResult> GetAllEvents()
         {
             var eventsResult = await _eventService.GetAllEventsAsync(e => true, default);
