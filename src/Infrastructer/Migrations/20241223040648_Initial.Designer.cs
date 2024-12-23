@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(EventApiDbContext))]
-    [Migration("20241218135856_Initial")]
+    [Migration("20241223040648_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -162,13 +162,13 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("cb8808c1-341e-4154-8bac-6f48719968f8"),
+                            Id = new Guid("e9fe0964-4938-4b08-97d6-2e01d86a65ee"),
                             EventId = new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"),
                             UserId = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479")
                         },
                         new
                         {
-                            Id = new Guid("f6521606-69f8-4887-a5c9-963ca57257f6"),
+                            Id = new Guid("eca7b871-67a7-4b44-88fc-17b0367dafc7"),
                             EventId = new Guid("5dc9ba5e-53c0-4166-87de-5f6f57021256"),
                             UserId = new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db")
                         });
@@ -263,7 +263,7 @@ namespace Infrastructure.Migrations
                     b.HasOne("Core.Entities.User", "Receiver")
                         .WithMany("ReceivedInvitations")
                         .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Event");
@@ -284,7 +284,7 @@ namespace Infrastructure.Migrations
                     b.HasOne("Core.Entities.User", "User")
                         .WithMany("ParticipatedEvents")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Event");

@@ -81,8 +81,7 @@ namespace Infrastructure.Migrations
                         name: "FK_Invitations_Users_ReceiverId",
                         column: x => x.ReceiverId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -106,8 +105,7 @@ namespace Infrastructure.Migrations
                         name: "FK_Participants_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.InsertData(
@@ -144,8 +142,8 @@ namespace Infrastructure.Migrations
                 columns: new[] { "Id", "EventId", "UserId" },
                 values: new object[,]
                 {
-                    { new Guid("cb8808c1-341e-4154-8bac-6f48719968f8"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479") },
-                    { new Guid("f6521606-69f8-4887-a5c9-963ca57257f6"), new Guid("5dc9ba5e-53c0-4166-87de-5f6f57021256"), new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db") }
+                    { new Guid("e9fe0964-4938-4b08-97d6-2e01d86a65ee"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479") },
+                    { new Guid("eca7b871-67a7-4b44-88fc-17b0367dafc7"), new Guid("5dc9ba5e-53c0-4166-87de-5f6f57021256"), new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db") }
                 });
 
             migrationBuilder.CreateIndex(
