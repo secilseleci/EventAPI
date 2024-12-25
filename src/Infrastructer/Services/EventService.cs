@@ -109,7 +109,7 @@ namespace Infrastructure.Services
 
         public async Task<IDataResult<ViewEventWithParticipantsDto>> GetEventWithParticipantsAsync(Guid eventId, CancellationToken cancellationToken)
         {
-            var eventEntity = await _eventRepository.GetByIdAsync(eventId);
+            var eventEntity = await _eventRepository.GetEventWithParticipantsAsync(eventId);
             if (eventEntity is null)
                 return new ErrorDataResult<ViewEventWithParticipantsDto>(Messages.EventNotFound);
 
