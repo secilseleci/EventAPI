@@ -59,14 +59,14 @@ namespace WebUI.Controllers
             return HandleResponse(eventResult);
         }
 
-        [HttpGet("organized-events/{id}")]
+        [HttpGet("organized-events/{userId}")]
         public async Task<IActionResult> GetOrganizedEventListForUser([FromRoute] Guid userId)
         {
             var eventResult=await _eventService.GetOrganizedEventListForUserAsync(userId, default);
             return HandleResponse(eventResult);
         }
         
-        [HttpGet("participated-events/{id}")]
+        [HttpGet("participated-events/{userId}")]
         public async Task<IActionResult> GetParticipatedEventListForUser([FromRoute] Guid userId)
         {
             var eventResult = await _eventService.GetParticipatedEventListForUserAsync(userId, default);
