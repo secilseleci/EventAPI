@@ -13,6 +13,7 @@ namespace Infrastructure.Mapping
             CreateMap<UpdateEventDto, Event>();
             CreateMap<ViewEventWithParticipantsDto, Event>().ReverseMap();
             CreateMap<ViewEventDto, Event>().ReverseMap();
+            CreateMap<InvitationDto, Invitation>().ReverseMap();
 
             CreateMap<ParticipantDto,Participant>().ReverseMap();
         }
