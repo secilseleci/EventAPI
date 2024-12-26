@@ -2,6 +2,7 @@
 using Core.Interfaces.Repositories;
 using Infrastructure.Repositories.Implementations;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories.Cache
@@ -66,8 +67,16 @@ namespace Infrastructure.Repositories.Cache
                 return await _decorated.GetInvitationByEventAndReceiverAsync(eventId,receiverId);
             });
         }
-
-
+        public async Task<List<Invitation>?> GetInvitationsWithDetailsAsync(Expression<Func<Invitation, bool>> predicate)
+        {
+            string key = $"invitation-with-details-{predicate}";
+            return await _cache.GetOrCreateAsync(key, async entry =>
+            {
+                CachedKeys.Add(key);
+                entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(3));
+                return await _decorated.GetInvitationsWithDetailsAsync(predicate);
+            });
+        }
         #region Helper Methods
         private void RemoveAllCachedItems(int result)
         {
@@ -82,7 +91,9 @@ namespace Infrastructure.Repositories.Cache
             CachedKeys.Clear();
         }
 
-      
+       
+
+
         #endregion
     }
 }

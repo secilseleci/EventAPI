@@ -76,9 +76,10 @@ namespace Infrastructure.Services
         {
             var eventList = await _eventRepository.GetAllAsync(predicate);
             return eventList is not null && eventList.Any()
-                ? new SuccessDataResult<IEnumerable<ViewEventDto>>(_mapper.Map<IEnumerable<ViewEventDto>>(eventList))
-                : new ErrorDataResult < IEnumerable < ViewEventDto>>(Messages.EmptyEventList);
+               ? new SuccessDataResult<IEnumerable<ViewEventDto>>(_mapper.Map<IEnumerable<ViewEventDto>>(eventList))
+               : new ErrorDataResult<IEnumerable<ViewEventDto>>(Messages.EmptyEventList);
         }
+
         public async Task<IDataResult<ViewEventDto>> GetEventByIdAsync(Guid eventId, CancellationToken cancellationToken)
         {
             var eventEntity= await _eventRepository.GetByIdAsync(eventId);
@@ -109,7 +110,7 @@ namespace Infrastructure.Services
 
         public async Task<IDataResult<ViewEventWithParticipantsDto>> GetEventWithParticipantsAsync(Guid eventId, CancellationToken cancellationToken)
         {
-            var eventEntity = await _eventRepository.GetByIdAsync(eventId);
+            var eventEntity = await _eventRepository.GetEventWithParticipantsAsync(eventId);
             if (eventEntity is null)
                 return new ErrorDataResult<ViewEventWithParticipantsDto>(Messages.EventNotFound);
 
@@ -149,7 +150,7 @@ namespace Infrastructure.Services
             if (userExists == false)
                 return new ErrorDataResult<IEnumerable<ViewEventDto>>(Messages.UserNotFound);
 
-            var eventList = await _eventRepository.GetAllAsync(e => e.Participants.Any(p => p.Id == userId));
+            var eventList = await _eventRepository.GetAllAsync(e => e.Participants.Any(p => p.UserId == userId));
             return eventList is not null && eventList.Any()
                ? new SuccessDataResult<IEnumerable<ViewEventDto>>(_mapper.Map<IEnumerable<ViewEventDto>>(eventList))
                : new ErrorDataResult<IEnumerable<ViewEventDto>>(Messages.EmptyEventList);

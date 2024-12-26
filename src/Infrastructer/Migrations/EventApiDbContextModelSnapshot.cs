@@ -63,22 +63,22 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"),
                             EndDate = new DateTimeOffset(new DateTime(2025, 2, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            EventDescription = "Celebrate our team leader's 40th birthday!",
-                            EventName = "Team Birthday Party",
-                            Location = "Istanbul",
+                            EventDescription = "Aramıza katılan yeni arkadaşlar, hoş geldiniz!",
+                            EventName = "Tanışma Toplantısı",
+                            Location = "Ofis",
                             OrganizerId = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
                             StartDate = new DateTimeOffset(new DateTime(2025, 2, 1, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Timezone = "UTC"
                         },
                         new
                         {
-                            Id = new Guid("5dc9ba5e-53c0-4166-87de-5f6f57021256"),
-                            EndDate = new DateTimeOffset(new DateTime(2025, 2, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            EventDescription = "Kickoff meeting for the new project.",
-                            EventName = "Project Kickoff Meeting",
-                            Location = "Ankara",
-                            OrganizerId = new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db"),
-                            StartDate = new DateTimeOffset(new DateTime(2025, 2, 1, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Id = new Guid("5d7e2f23-49d2-4e7e-9517-3a14c67e36a9"),
+                            EndDate = new DateTimeOffset(new DateTime(2025, 2, 8, 16, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            EventDescription = "Yeni projeler için planlama ve görev dağılımı yapılacaktır.",
+                            EventName = "Proje Planlama Toplantısı",
+                            Location = "Ofis",
+                            OrganizerId = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
+                            StartDate = new DateTimeOffset(new DateTime(2025, 2, 8, 14, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Timezone = "UTC"
                         });
                 });
@@ -120,19 +120,37 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("2a5b59a3-d486-4b8b-b0e4-3fb27cf8b85b"),
                             EventId = new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"),
-                            IsAccepted = false,
-                            Message = "Join us for the birthday party!",
+                            IsAccepted = true,
+                            Message = "Sen de davetlisin Hasan!",
                             OrganizerId = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
                             ReceiverId = new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db")
                         },
                         new
                         {
-                            Id = new Guid("3b5c59a3-d486-4b8b-b0e4-3fb27cf8b85b"),
-                            EventId = new Guid("5dc9ba5e-53c0-4166-87de-5f6f57021256"),
-                            IsAccepted = false,
-                            Message = "Kickoff meeting invitation",
-                            OrganizerId = new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db"),
+                            Id = new Guid("b95c33b8-0b68-4a5c-8255-8c4a48224862"),
+                            EventId = new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"),
+                            IsAccepted = true,
+                            Message = "Sen de davetlisin Eda!",
+                            OrganizerId = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
                             ReceiverId = new Guid("b12f1fc3-a9e7-4b53-90a7-0b2e1e7d3a12")
+                        },
+                        new
+                        {
+                            Id = new Guid("f20d308d-fdd5-4b1b-b71d-b0a0c26c1280"),
+                            EventId = new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"),
+                            IsAccepted = true,
+                            Message = "Sen de davetlisin Gokhan!",
+                            OrganizerId = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
+                            ReceiverId = new Guid("9c24e2f7-52b1-4f78-8dce-3ae146b7f9d5")
+                        },
+                        new
+                        {
+                            Id = new Guid("cfcf8770-728d-482c-90d8-fd40cba5551c"),
+                            EventId = new Guid("5d7e2f23-49d2-4e7e-9517-3a14c67e36a9"),
+                            IsAccepted = true,
+                            Message = "Sen de davetlisin Gokhan!",
+                            OrganizerId = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
+                            ReceiverId = new Guid("9c24e2f7-52b1-4f78-8dce-3ae146b7f9d5")
                         });
                 });
 
@@ -159,15 +177,27 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("e9fe0964-4938-4b08-97d6-2e01d86a65ee"),
+                            Id = new Guid("adac5cd5-fcdd-400c-94b0-439f03c64ec8"),
                             EventId = new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"),
-                            UserId = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479")
+                            UserId = new Guid("b12f1fc3-a9e7-4b53-90a7-0b2e1e7d3a12")
                         },
                         new
                         {
-                            Id = new Guid("eca7b871-67a7-4b44-88fc-17b0367dafc7"),
-                            EventId = new Guid("5dc9ba5e-53c0-4166-87de-5f6f57021256"),
+                            Id = new Guid("18c0a805-d5b3-427b-af79-e771aa23ba1b"),
+                            EventId = new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"),
+                            UserId = new Guid("9c24e2f7-52b1-4f78-8dce-3ae146b7f9d5")
+                        },
+                        new
+                        {
+                            Id = new Guid("ded36dc2-1665-44ad-b82c-04c3cb13a5ce"),
+                            EventId = new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"),
                             UserId = new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db")
+                        },
+                        new
+                        {
+                            Id = new Guid("064a6b90-4f87-4260-9e4b-8f4825496ee8"),
+                            EventId = new Guid("5d7e2f23-49d2-4e7e-9517-3a14c67e36a9"),
+                            UserId = new Guid("9c24e2f7-52b1-4f78-8dce-3ae146b7f9d5")
                         });
                 });
 

@@ -124,8 +124,8 @@ namespace Infrastructure.Migrations
                 columns: new[] { "Id", "EndDate", "EventDescription", "EventName", "Location", "OrganizerId", "StartDate", "Timezone" },
                 values: new object[,]
                 {
-                    { new Guid("5dc9ba5e-53c0-4166-87de-5f6f57021256"), new DateTimeOffset(new DateTime(2025, 2, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Kickoff meeting for the new project.", "Project Kickoff Meeting", "Ankara", new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db"), new DateTimeOffset(new DateTime(2025, 2, 1, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "UTC" },
-                    { new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), new DateTimeOffset(new DateTime(2025, 2, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Celebrate our team leader's 40th birthday!", "Team Birthday Party", "Istanbul", new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"), new DateTimeOffset(new DateTime(2025, 2, 1, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "UTC" }
+                    { new Guid("5d7e2f23-49d2-4e7e-9517-3a14c67e36a9"), new DateTimeOffset(new DateTime(2025, 2, 8, 16, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Yeni projeler için planlama ve görev dağılımı yapılacaktır.", "Proje Planlama Toplantısı", "Ofis", new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"), new DateTimeOffset(new DateTime(2025, 2, 8, 14, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "UTC" },
+                    { new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), new DateTimeOffset(new DateTime(2025, 2, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Aramıza katılan yeni arkadaşlar, hoş geldiniz!", "Tanışma Toplantısı", "Ofis", new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"), new DateTimeOffset(new DateTime(2025, 2, 1, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "UTC" }
                 });
 
             migrationBuilder.InsertData(
@@ -133,8 +133,10 @@ namespace Infrastructure.Migrations
                 columns: new[] { "Id", "EventId", "IsAccepted", "Message", "OrganizerId", "ReceiverId" },
                 values: new object[,]
                 {
-                    { new Guid("2a5b59a3-d486-4b8b-b0e4-3fb27cf8b85b"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), false, "Join us for the birthday party!", new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"), new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db") },
-                    { new Guid("3b5c59a3-d486-4b8b-b0e4-3fb27cf8b85b"), new Guid("5dc9ba5e-53c0-4166-87de-5f6f57021256"), false, "Kickoff meeting invitation", new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db"), new Guid("b12f1fc3-a9e7-4b53-90a7-0b2e1e7d3a12") }
+                    { new Guid("2a5b59a3-d486-4b8b-b0e4-3fb27cf8b85b"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), true, "Sen de davetlisin Hasan!", new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"), new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db") },
+                    { new Guid("b95c33b8-0b68-4a5c-8255-8c4a48224862"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), true, "Sen de davetlisin Eda!", new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"), new Guid("b12f1fc3-a9e7-4b53-90a7-0b2e1e7d3a12") },
+                    { new Guid("cfcf8770-728d-482c-90d8-fd40cba5551c"), new Guid("5d7e2f23-49d2-4e7e-9517-3a14c67e36a9"), true, "Sen de davetlisin Gokhan!", new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"), new Guid("9c24e2f7-52b1-4f78-8dce-3ae146b7f9d5") },
+                    { new Guid("f20d308d-fdd5-4b1b-b71d-b0a0c26c1280"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), true, "Sen de davetlisin Gokhan!", new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"), new Guid("9c24e2f7-52b1-4f78-8dce-3ae146b7f9d5") }
                 });
 
             migrationBuilder.InsertData(
@@ -142,8 +144,10 @@ namespace Infrastructure.Migrations
                 columns: new[] { "Id", "EventId", "UserId" },
                 values: new object[,]
                 {
-                    { new Guid("e9fe0964-4938-4b08-97d6-2e01d86a65ee"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479") },
-                    { new Guid("eca7b871-67a7-4b44-88fc-17b0367dafc7"), new Guid("5dc9ba5e-53c0-4166-87de-5f6f57021256"), new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db") }
+                    { new Guid("064a6b90-4f87-4260-9e4b-8f4825496ee8"), new Guid("5d7e2f23-49d2-4e7e-9517-3a14c67e36a9"), new Guid("9c24e2f7-52b1-4f78-8dce-3ae146b7f9d5") },
+                    { new Guid("18c0a805-d5b3-427b-af79-e771aa23ba1b"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), new Guid("9c24e2f7-52b1-4f78-8dce-3ae146b7f9d5") },
+                    { new Guid("adac5cd5-fcdd-400c-94b0-439f03c64ec8"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), new Guid("b12f1fc3-a9e7-4b53-90a7-0b2e1e7d3a12") },
+                    { new Guid("ded36dc2-1665-44ad-b82c-04c3cb13a5ce"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db") }
                 });
 
             migrationBuilder.CreateIndex(

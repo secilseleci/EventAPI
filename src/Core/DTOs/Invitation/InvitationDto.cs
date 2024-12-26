@@ -11,6 +11,7 @@
         public DateTimeOffset EventEndDate { get; set; }  
         public string Timezone { get; set; } = string.Empty;
         public string Organizer { get; set; } = string.Empty;
+        public string Receiver { get; set; } = string.Empty;
 
 
     }

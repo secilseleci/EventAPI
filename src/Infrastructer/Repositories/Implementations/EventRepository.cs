@@ -18,7 +18,7 @@ namespace Infrastructure.Repositories.Implementations
             .FirstOrDefaultAsync();
              
             return eventEntity;
-    }
+        }
 
         public async Task<int> GetParticipantCountAsync(Guid eventId)
         {

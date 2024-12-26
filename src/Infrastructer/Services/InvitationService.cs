@@ -20,7 +20,7 @@ namespace Infrastructure.Services
             var isValidUser=await _userService.IsUserValidAsync(userId, cancellationToken);
             if (isValidUser == false)
                 return new ErrorDataResult<IEnumerable<InvitationDto>>(Messages.UserNotFound);
-            var invitationList=await _invitationRepository.GetAllAsync(i=>i.ReceiverId == userId);
+            var invitationList=await _invitationRepository.GetInvitationsWithDetailsAsync(i=>i.ReceiverId == userId);
 
             return invitationList is not null && invitationList.Any()
               ? new SuccessDataResult<IEnumerable<InvitationDto>>(_mapper.Map<IEnumerable<InvitationDto>>(invitationList))
@@ -32,7 +32,7 @@ namespace Infrastructure.Services
             var isValidUser = await _userService.IsUserValidAsync(userId, cancellationToken);
             if (isValidUser == false)
                 return new ErrorDataResult<IEnumerable<InvitationDto>>(Messages.UserNotFound);
-            var invitationList = await _invitationRepository.GetAllAsync(i => i.OrganizerId == userId);
+            var invitationList = await _invitationRepository.GetInvitationsWithDetailsAsync(i => i.OrganizerId == userId); ;
 
             return invitationList is not null && invitationList.Any()
               ? new SuccessDataResult<IEnumerable<InvitationDto>>(_mapper.Map<IEnumerable<InvitationDto>>(invitationList))
@@ -48,7 +48,7 @@ namespace Infrastructure.Services
             var invitationEntity = await _invitationRepository.GetInvitationByEventAndReceiverAsync(eventId, receiverId);
             return invitationEntity is null
                ? new ErrorDataResult<InvitationDto?>(Messages.InvitationNotFound)
-                : new SuccessDataResult<InvitationDto?>(Messages.InvitationRetrievedSuccessfully);
+                : new SuccessDataResult<InvitationDto?>(_mapper.Map<InvitationDto>(invitationEntity));
 
 
         }
