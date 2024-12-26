@@ -149,7 +149,7 @@ namespace Infrastructure.Services
             if (userExists == false)
                 return new ErrorDataResult<IEnumerable<ViewEventDto>>(Messages.UserNotFound);
 
-            var eventList = await _eventRepository.GetAllAsync(e => e.Participants.Any(p => p.Id == userId));
+            var eventList = await _eventRepository.GetAllAsync(e => e.Participants.Any(p => p.UserId == userId));
             return eventList is not null && eventList.Any()
                ? new SuccessDataResult<IEnumerable<ViewEventDto>>(_mapper.Map<IEnumerable<ViewEventDto>>(eventList))
                : new ErrorDataResult<IEnumerable<ViewEventDto>>(Messages.EmptyEventList);
