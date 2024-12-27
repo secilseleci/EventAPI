@@ -53,26 +53,7 @@ namespace Infrastructure.Services
 
         }
 
-        public async Task<IResult> ParticipateInvitationAsync(Guid receiverId, Guid eventId, CancellationToken cancellationToken)
-        {
-            var isValidUser = await _userService.IsUserValidAsync(receiverId, cancellationToken);
-
-            if (isValidUser == false)
-                return new ErrorResult(Messages.UserNotFound);
-
-            var invitationResult = await GetSingleInvitationAsync(receiverId, eventId, cancellationToken);
-            if (!invitationResult.Success)
-                return new ErrorResult(invitationResult.Message);
-
-            var invitation = _mapper.Map<Invitation>(invitationResult.Data);
-            invitation.IsAccepted = true;
-
-            var updateResult = await _invitationRepository.UpdateAsync(invitation);
-            return updateResult > 0
-                ? new SuccessResult(Messages.InvitationAcceptedSuccessfully)
-                : new ErrorResult(Messages.UpdateInvitationError);
-        }        
-
+             
         public async Task<IResult> SendInvitationAsync(Guid organizerId, Guid eventId, List<Guid> userIds, CancellationToken cancellationToken)
         {
             // Kullanıcı doğrulaması
@@ -134,6 +115,29 @@ namespace Infrastructure.Services
             }
 
             return new SuccessResult(Messages.InvitationsSentSuccessfully);
+        }
+    
+
+        public async Task<IResult> ParticipateInvitationAsync(Guid receiverId, Guid eventId, CancellationToken cancellationToken)
+        {
+            var isValidUser = await _userService.IsUserValidAsync(receiverId, cancellationToken);
+
+            if (isValidUser == false)
+                return new ErrorResult(Messages.UserNotFound);
+
+            var invitation = await _invitationRepository.GetInvitationByEventAndReceiverAsync(eventId, receiverId);
+            if (invitation == null)
+                return new ErrorResult(Messages.InvitationNotFound);
+
+            // Sadece gerekli alanları güncelle
+            invitation.IsAccepted = true;
+
+            // Güncellenmiş entity'yi veritabanına kaydet
+            var updateResult = await _invitationRepository.UpdateAsync(invitation);
+
+            return updateResult > 0
+                ? new SuccessResult(Messages.InvitationAcceptedSuccessfully)
+                : new ErrorResult(Messages.UpdateInvitationError);
         }
     }
 }

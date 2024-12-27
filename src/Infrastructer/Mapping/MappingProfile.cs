@@ -23,7 +23,13 @@ namespace Infrastructure.Mapping
                 .ForMember(dest => dest.Timezone, opt => opt.MapFrom(src => src.Event.Timezone))
                 .ForMember(dest => dest.Organizer, opt => opt.MapFrom(src => src.Organizer.UserName))
                 .ForMember(dest => dest.Receiver, opt => opt.MapFrom(src => src.Receiver.UserName));  
-            ;  
+            ;
+            CreateMap<InvitationDto, Invitation>()
+      .ForMember(dest => dest.Id, opt => opt.Ignore()) // Id'yi var olan entity'den al
+      .ForMember(dest => dest.EventId, opt => opt.Ignore()) // EventId'yi bozma
+      .ForMember(dest => dest.OrganizerId, opt => opt.Ignore()) // OrganizerId'yi bozma
+      .ForMember(dest => dest.ReceiverId, opt => opt.Ignore()) // ReceiverId'yi bozma
+      .ForMember(dest => dest.IsAccepted, opt => opt.MapFrom(src => src.IsAccepted ?? false)); // Nullable değeri kontrol et
 
             CreateMap<ParticipantDto,Participant>().ReverseMap();
         }
