@@ -12,9 +12,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebUI", "src\WebUI\WebUI.csproj", "{41C833E1-A832-4E11-A336-0A9B9744860F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{3D46355E-3D90-42A5-97EB-52D6FAF55CDD}"
-	ProjectSection(SolutionItems) = preProject
-		GlobalUsing.cs = GlobalUsing.cs
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Integration", "tests\Integration\Integration.csproj", "{81C6438E-4630-4DD7-991B-6E43CDF5801F}"
 EndProject

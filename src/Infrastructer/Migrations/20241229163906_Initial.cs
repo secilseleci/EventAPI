@@ -144,10 +144,10 @@ namespace Infrastructure.Migrations
                 columns: new[] { "Id", "EventId", "UserId" },
                 values: new object[,]
                 {
-                    { new Guid("064a6b90-4f87-4260-9e4b-8f4825496ee8"), new Guid("5d7e2f23-49d2-4e7e-9517-3a14c67e36a9"), new Guid("9c24e2f7-52b1-4f78-8dce-3ae146b7f9d5") },
-                    { new Guid("18c0a805-d5b3-427b-af79-e771aa23ba1b"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), new Guid("9c24e2f7-52b1-4f78-8dce-3ae146b7f9d5") },
-                    { new Guid("adac5cd5-fcdd-400c-94b0-439f03c64ec8"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), new Guid("b12f1fc3-a9e7-4b53-90a7-0b2e1e7d3a12") },
-                    { new Guid("ded36dc2-1665-44ad-b82c-04c3cb13a5ce"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db") }
+                    { new Guid("50a7788d-40e8-4792-b857-99097bca99a1"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), new Guid("9c24e2f7-52b1-4f78-8dce-3ae146b7f9d5") },
+                    { new Guid("5bc06815-6ffd-4d2c-9f9b-66117cea6576"), new Guid("5d7e2f23-49d2-4e7e-9517-3a14c67e36a9"), new Guid("9c24e2f7-52b1-4f78-8dce-3ae146b7f9d5") },
+                    { new Guid("99e05c72-06ed-4392-811d-2a45bb5ba7a7"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), new Guid("b12f1fc3-a9e7-4b53-90a7-0b2e1e7d3a12") },
+                    { new Guid("cad9d150-3e65-4a33-820c-0ffbb26cab2a"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db") }
                 });
 
             migrationBuilder.CreateIndex(
