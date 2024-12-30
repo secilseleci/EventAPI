@@ -1,14 +1,6 @@
 ﻿using AutoMapper;
-using Core.DTOs.Event;
-using Core.Interfaces.Repositories;
-using Core.Interfaces.Services;
-using Core.Utilities.Constants;
-using Core.Utilities.Results;
 using Infrastructure.Services;
-using Integration.Base;
-using Integration.Fixtures;
 using Moq;
-using Xunit;
 
 namespace Integration.ServiceTests.EventServiceTests
 {
@@ -58,11 +50,11 @@ namespace Integration.ServiceTests.EventServiceTests
             var validUserId = Guid.NewGuid();
             var createEventDto = new CreateEventDto
             {
-                Location = "test location",
-                EndDate = DateTime.Now,
-                StartDate = DateTime.Now,
-                EventDescription = "Test Event",
-                EventName = "TestEvent",
+                Location = "Test location",
+                EndDate = DateTimeOffset.UtcNow.AddHours(2),
+                StartDate = DateTimeOffset.UtcNow,
+                EventDescription = "A description for the test event",
+                EventName = "Test Event",
                 Timezone="UTC",
             };
 
@@ -93,7 +85,175 @@ namespace Integration.ServiceTests.EventServiceTests
             //Assert
             Assert.IsType<SuccessResult>(result);
             Assert.Equal(Messages.CreateEventSuccess, result.Message);
-        } 
+        }
+
+        [Fact]
+        public async Task CreateEventAsync_Should_Return_ErrorResult_When_DateRange_Is_InValid()
+        {           
+            // Arrange
+            var validUserId = Guid.NewGuid();
+            var createEventDto = new CreateEventDto
+            {
+                Location = "Test location",
+                EndDate = DateTimeOffset.UtcNow,
+                StartDate = DateTimeOffset.UtcNow.AddHours(2),
+                EventDescription = "A description for the test event",
+                EventName = "Test Event",
+                Timezone = "UTC",
+            };
+            
+
+            _userServiceMock.Setup(u => u.IsUserValidAsync(validUserId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            // Act
+            var result = await _eventService.CreateEventAsync(createEventDto, validUserId, CancellationToken.None);
+            //Assert
+            Assert.IsType<ErrorResult>(result);
+            Assert.Equal(Messages.InvalidDateRange, result.Message);
+        }
+
+        [Fact]
+        public async Task CreateEventAsync_Should_Return_ErrorResult_When_Dto_Is_Not_Mapped()
+        {
+            // Arrange
+            var validUserId = Guid.NewGuid();
+            var createEventDto = new CreateEventDto
+            {
+                Location = "Test location",
+                EndDate = DateTimeOffset.UtcNow.AddHours(2),
+                StartDate = DateTimeOffset.UtcNow,
+                EventDescription = "A description for the test event",
+                EventName = "Test Event",
+                Timezone = "UTC",
+            };
+
+
+            _userServiceMock.Setup(u => u.IsUserValidAsync(validUserId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            _mapperMock.Setup(m => m.Map<Event>(createEventDto))
+                .Returns((Event)null);
+            // Act
+            var result = await _eventService.CreateEventAsync(createEventDto, validUserId, CancellationToken.None);
+
+            //Assert
+            Assert.IsType<ErrorResult>(result);
+            Assert.Equal(Messages.CreateEventError, result.Message);
+        }
+        
+        [Fact]
+        public async Task CreateEventAsync_Should_Return_ErrorResult_When_DatabaseInsert_Fails()
+        {
+            //Arrange
+            var validUserId = Guid.NewGuid();
+            var createEventDto = new CreateEventDto
+            {
+                Location = "Test location",
+                EndDate = DateTimeOffset.UtcNow.AddHours(2),
+                StartDate = DateTimeOffset.UtcNow,
+                EventDescription = "A description for the test event",
+                EventName = "Test Event",
+                Timezone = "UTC",
+            };
+            var mappedEvent = new Event
+            {
+                Id = Guid.NewGuid(),
+                EventName = createEventDto.EventName,
+                EventDescription = createEventDto.EventDescription,
+                StartDate = createEventDto.StartDate,
+                EndDate = createEventDto.EndDate,
+                Location = createEventDto.Location,
+                Timezone = createEventDto.Timezone,
+                OrganizerId = validUserId
+            };
+            _userServiceMock.Setup(u => u.IsUserValidAsync(validUserId, It.IsAny<CancellationToken>()))
+              .ReturnsAsync(true);
+            _mapperMock.Setup(m => m.Map<Event>(createEventDto))
+            .Returns(mappedEvent);
+
+            _eventRepositoryMock.Setup(r => r.CreateAsync(It.IsAny<Event>()))
+            .ReturnsAsync(0);
+
+            // Act
+            var result = await _eventService.CreateEventAsync(createEventDto, validUserId, CancellationToken.None);
+
+            //Assert
+            Assert.IsType<ErrorResult>(result);
+            Assert.Equal(Messages.CreateEventError, result.Message);
+        }
+
+        [Fact]
+        public async Task CreateEventAsync_Should_Return_SuccessResult_When_All_Conditions_Are_Met()
+        {
+            //Arrange
+            var validUserId = Guid.NewGuid();
+            var createEventDto = new CreateEventDto
+            {
+                Location = "Test location",
+                EndDate = DateTimeOffset.UtcNow.AddHours(2),
+                StartDate = DateTimeOffset.UtcNow,
+                EventDescription = "A description for the test event",
+                EventName = "Test Event",
+                Timezone = "UTC",
+            };
+            var mappedEvent = new Event
+            {
+                Id = Guid.NewGuid(),
+                EventName = createEventDto.EventName,
+                EventDescription = createEventDto.EventDescription,
+                StartDate = createEventDto.StartDate,
+                EndDate = createEventDto.EndDate,
+                Location = createEventDto.Location,
+                Timezone = createEventDto.Timezone,
+                OrganizerId = validUserId
+            };
+            _userServiceMock.Setup(u => u.IsUserValidAsync(validUserId, It.IsAny<CancellationToken>()))
+              .ReturnsAsync(true); 
+
+            _mapperMock.Setup(m => m.Map<Event>(createEventDto))
+                .Returns(mappedEvent);  
+
+            _eventRepositoryMock.Setup(r => r.CreateAsync(It.IsAny<Event>()))
+                .ReturnsAsync(1);
+
+            //Act
+            var result = await _eventService.CreateEventAsync(createEventDto, validUserId, CancellationToken.None);
+
+            //Assert
+            Assert.IsType<SuccessResult> (result);
+            Assert.Equal(Messages.CreateEventSuccess, result.Message);
+
+        }
+
+        [Fact]
+        public async Task CreateEventAsync_Should_Return_ErrorResult_When_EventName_Is_Too_Short()
+        {
+            // Arrange
+            var validUserId = Guid.NewGuid();
+            var createEventDto = new CreateEventDto
+            {
+                EventName = "A", // Çok kısa
+                EndDate = DateTimeOffset.UtcNow.AddHours(2),
+                StartDate = DateTimeOffset.UtcNow,
+                Location = "Test location",
+                Timezone = "UTC"
+            };
+
+            // Act
+            var result = await _eventService.CreateEventAsync(createEventDto, validUserId, CancellationToken.None);
+
+            // Assert
+            Assert.IsType<ErrorResult>(result);
+            Assert.Equal(Messages.InvalidDto, result.Message);
+        }
+
+
+
+
+
+
+
         #endregion
     }
 }

@@ -23,7 +23,13 @@ namespace Infrastructure.Services
             if (isValidUser == false)  
                 return new ErrorResult(Messages.UserNotFound);
 
+            if (createEventDto.StartDate >= createEventDto.EndDate)
+                return new ErrorResult(Messages.InvalidDateRange);
+
             var eventEntity=_mapper.Map<Event>(createEventDto);
+            if (eventEntity == null)  
+                return new ErrorResult(Messages.CreateEventError); 
+            
             eventEntity.OrganizerId = userId;
             
             var createResult = await _eventRepository.CreateAsync(eventEntity);

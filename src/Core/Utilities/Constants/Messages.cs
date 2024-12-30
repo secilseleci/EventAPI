@@ -14,6 +14,8 @@ namespace Core.Utilities.Constants
         public const string EmptyEventList = "Event list is empty with the current filter";
         public const string CreateEventSuccess = "Event created successfully";
         public const string CreateEventError = "Error occured while registering the Event to Database";
+        public const string InvalidDateRange = "Start date must be earlier than end date.";
+        public const string InvalidDto = "EventName must be between 3 and 50 characters.";
         public const string UpdateEventSuccess = "Event updated successfully";
         public const string UpdateEventError = "Error occured while updating the Event in Database";
         public const string DeleteEventSuccess = "Event deleted succesfully";
