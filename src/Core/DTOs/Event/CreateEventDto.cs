@@ -6,7 +6,6 @@ namespace Core.DTOs.Event
     {
         [Required]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "EventName must be between 3 and 50 characters.")]
-
         public string EventName { get; set; } = string.Empty;
         public string? EventDescription { get; set; }
         [Required]

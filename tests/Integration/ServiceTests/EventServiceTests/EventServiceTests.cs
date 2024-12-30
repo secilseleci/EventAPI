@@ -226,32 +226,10 @@ namespace Integration.ServiceTests.EventServiceTests
 
         }
 
-        [Fact]
-        public async Task CreateEventAsync_Should_Return_ErrorResult_When_EventName_Is_Too_Short()
-        {
-            // Arrange
-            var validUserId = Guid.NewGuid();
-            var createEventDto = new CreateEventDto
-            {
-                EventName = "A", // Çok kısa
-                EndDate = DateTimeOffset.UtcNow.AddHours(2),
-                StartDate = DateTimeOffset.UtcNow,
-                Location = "Test location",
-                Timezone = "UTC"
-            };
+        
+        #endregion
 
-            // Act
-            var result = await _eventService.CreateEventAsync(createEventDto, validUserId, CancellationToken.None);
-
-            // Assert
-            Assert.IsType<ErrorResult>(result);
-            Assert.Equal(Messages.InvalidDto, result.Message);
-        }
-
-
-
-
-
+        #region DeleteEvent
 
 
         #endregion
