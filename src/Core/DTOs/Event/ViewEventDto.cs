@@ -13,6 +13,7 @@ namespace Core.DTOs.Event
         public DateTimeOffset EndDate { get; set; }
         [Required]
         public string Location { get; set; } = string.Empty;
-        
+        [Required]
+        public string Timezone { get; set; } = "UTC"; // Varsayılan "UTC"
     }
 }

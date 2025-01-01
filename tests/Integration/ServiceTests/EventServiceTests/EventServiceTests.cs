@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Core.Utilities.Results;
 using Infrastructure.Services;
 using Moq;
+using System.Linq.Expressions;
 
 namespace Integration.ServiceTests.EventServiceTests
 {
@@ -228,7 +230,6 @@ namespace Integration.ServiceTests.EventServiceTests
 
 
         #endregion
-
         #region DeleteEvent
         [Fact]
         public async Task DeleteEventAsync_Should_Return_EventNotFound_When_Event_Does_Not_Exist()
@@ -332,6 +333,315 @@ namespace Integration.ServiceTests.EventServiceTests
 
         }
 
+        #endregion
+        #region UpdateEvent
+        [Fact]
+        public async Task UpdateEventAsync_Should_Return_EventNotFound_When_Event_Does_Not_Exist()
+        {
+            //Arrange
+            var validUserId = Guid.NewGuid();
+            var updateEventDto = new UpdateEventDto
+            {
+                Id = Guid.NewGuid(),
+                Location = "Test location",
+                EndDate = DateTimeOffset.UtcNow.AddHours(2),
+                StartDate = DateTimeOffset.UtcNow,
+                EventDescription = "A description for the test event",
+                EventName = "Test Event",
+                Timezone = "UTC",
+            };
+
+            _eventRepositoryMock.Setup(e => e.GetByIdAsync(updateEventDto.Id))
+            .ReturnsAsync((Event)null);
+
+            //Act
+            var result = await _eventService.UpdateEventAsync(updateEventDto, validUserId, CancellationToken.None);
+            //Assert
+            Assert.IsType<ErrorResult>(result);
+            Assert.Equal(Messages.EventNotFound, result.Message);
+        }
+
+        [Fact]
+        public async Task UpdateEventAsync_Should_Return_UnauthorizedAccess_When_User_Is_Not_Organizer()
+        {
+            //Arrange
+            var validUserId = Guid.NewGuid();
+            var updateEventDto = new UpdateEventDto
+            {
+                Id = Guid.NewGuid(),
+                Location = "Test location",
+                EndDate = DateTimeOffset.UtcNow.AddHours(2),
+                StartDate = DateTimeOffset.UtcNow,
+                EventDescription = "A description for the test event",
+                EventName = "Test Event",
+                Timezone = "UTC",
+                
+            };
+
+            var mappedEvent = new Event
+            {
+                Id = updateEventDto.Id,
+                Location = updateEventDto.Location,
+                Timezone = updateEventDto.Timezone,
+                EndDate = updateEventDto.EndDate,
+                StartDate = updateEventDto.StartDate,
+                EventDescription = updateEventDto.EventDescription,
+                EventName = updateEventDto.EventName,
+                OrganizerId = Guid.NewGuid(),
+            };
+            _eventRepositoryMock.Setup(e => e.GetByIdAsync(updateEventDto.Id))
+            .ReturnsAsync(mappedEvent);
+            //Act
+            var result = await _eventService.UpdateEventAsync(updateEventDto, validUserId, CancellationToken.None);
+            //Assert
+            Assert.IsType<ErrorResult>(result);
+            Assert.Equal(Messages.UnauthorizedAccess, result.Message);
+        }
+        [Fact]
+        public async Task UpdateEventAsync_Should_Return_ErrorResult_When_DateRange_Is_InValid()
+        {
+            // Arrange
+            var validUserId = Guid.NewGuid();
+            var updateEventDto = new UpdateEventDto
+            {
+                Id = Guid.NewGuid(),
+                Location = "Test location",
+                EndDate = DateTimeOffset.UtcNow, // Bitiş tarihi, başlangıç tarihinden önce
+                StartDate = DateTimeOffset.UtcNow.AddHours(2),
+                EventDescription = "A description for the test event",
+                EventName = "Test Event",
+                Timezone = "UTC",
+            };
+
+            var eventEntity = new Event
+            {
+                Id = updateEventDto.Id,
+                OrganizerId = validUserId,
+                EventName = "Old Event",
+                EventDescription = "Old Description",
+                StartDate = DateTimeOffset.UtcNow.AddHours(-1),
+                EndDate = DateTimeOffset.UtcNow,
+                Location = "Old Location",
+                Timezone = "PST",
+            };
+
+            _eventRepositoryMock.Setup(e => e.GetByIdAsync(updateEventDto.Id))
+                .ReturnsAsync(eventEntity); // Sistemdeki mevcut event
+
+            // Act
+            var result = await _eventService.UpdateEventAsync(updateEventDto, validUserId, CancellationToken.None);
+
+            // Assert
+            Assert.IsType<ErrorResult>(result);
+            Assert.Equal(Messages.InvalidDateRange, result.Message);
+        }
+
+        [Fact]
+        public async Task UpdateEventAsync_Should_Return_ErrorResult_When_Entity_Not_Updated()
+        {
+            // Arrange
+            var validUserId = Guid.NewGuid();
+            var updateEventDto = new UpdateEventDto
+            {
+                Id = Guid.NewGuid(),
+                Location = "Updated Location",
+                EndDate = DateTimeOffset.UtcNow.AddHours(2),
+                StartDate = DateTimeOffset.UtcNow,
+                EventDescription = "Updated Description",
+                EventName = "Updated Event",
+                Timezone = "UTC",
+            };
+
+            var eventEntity = new Event
+            {
+                Id = updateEventDto.Id,
+                OrganizerId = validUserId,
+                EventName = "Old Event",
+                EventDescription = "Old Description",
+                StartDate = DateTimeOffset.UtcNow.AddHours(-1),
+                EndDate = DateTimeOffset.UtcNow,
+                Location = "Old Location",
+                Timezone = "PST",
+            };
+
+            _eventRepositoryMock.Setup(e => e.GetByIdAsync(updateEventDto.Id))
+                .ReturnsAsync(eventEntity);
+
+            // Mock: UpdateAsync çağrıldığında eski değerlerin hâlâ geçerli olduğunu kontrol et
+            _eventRepositoryMock.Setup(r => r.UpdateAsync(It.Is<Event>(e =>
+                e.EventName == "Old Event" && // Değerler değişmemiş
+                e.Location == "Old Location"
+            ))).ReturnsAsync(0); // Başarısız güncelleme
+
+            // Act
+            var result = await _eventService.UpdateEventAsync(updateEventDto, validUserId, CancellationToken.None);
+
+            // Assert
+            Assert.IsType<ErrorResult>(result);
+            Assert.Equal(Messages.UpdateEventError, result.Message);
+        }
+        [Fact]
+        public async Task UpdateEventAsync_Should_Return_SuccessResult_When_All_Conditions_Are_Met()
+        {
+            // Arrange
+            var validUserId = Guid.NewGuid();
+            var updateEventDto = new UpdateEventDto
+            {
+                Id = Guid.NewGuid(),
+                Location = "Updated Location",
+                EndDate = DateTimeOffset.UtcNow.AddHours(2),
+                StartDate = DateTimeOffset.UtcNow,
+                EventDescription = "Updated Description",
+                EventName = "Updated Event",
+                Timezone = "UTC",
+            };
+
+            var eventEntity = new Event
+            {
+                Id = updateEventDto.Id,
+                OrganizerId = validUserId,
+                EventName = "Old Event",
+                EventDescription = "Old Description",
+                StartDate = DateTimeOffset.UtcNow.AddHours(-1),
+                EndDate = DateTimeOffset.UtcNow,
+                Location = "Old Location",
+                Timezone = "PST",
+            };
+
+            _eventRepositoryMock.Setup(e => e.GetByIdAsync(updateEventDto.Id ))
+                .ReturnsAsync(eventEntity);
+
+            _eventRepositoryMock.Setup(r => r.UpdateAsync(It.IsAny<Event>()))
+                .ReturnsAsync(1); // Başarılı güncelleme
+
+            // Act
+            var result = await _eventService.UpdateEventAsync(updateEventDto, validUserId, CancellationToken.None);
+
+            // Assert
+            Assert.IsType<SuccessResult>(result);
+            Assert.Equal(Messages.UpdateEventSuccess, result.Message);
+        }
+
+        #endregion
+
+        #region ReadEvent
+        [Fact]
+        public async Task GetEventByIdAsync_Should_Return_ErrorDataResult_When_Event_Not_Found()
+        {
+            // Arrange
+            var eventId= Guid.NewGuid();
+            _eventRepositoryMock.Setup(e => e.GetByIdAsync(eventId))
+                .ReturnsAsync((Event)null);
+            // Act
+            var result= await _eventService.GetEventByIdAsync(eventId, CancellationToken.None);
+            // Assert
+            Assert.IsType<ErrorDataResult<ViewEventDto>>(result);
+            Assert.Equal(Messages.EventNotFound, result.Message);
+
+        }
+
+        [Fact]
+        public async Task GetEventByIdAsync_Should_Return_SuccessDataResult_When_Event_Found()
+        {
+            // Arrange
+            var eventId = Guid.NewGuid();
+            var eventEntity = new Event
+            {
+                Id = eventId,
+                EventName = "Test Event",
+                EventDescription = "A sample test event",
+                StartDate = DateTimeOffset.UtcNow,
+                EndDate = DateTimeOffset.UtcNow.AddHours(2),
+                Location = "Test Location",
+                Timezone = "UTC",
+                OrganizerId = Guid.NewGuid()
+            };
+
+            var viewEventDto = new ViewEventDto
+            {
+                EventName = eventEntity.EventName,
+                EventDescription = eventEntity.EventDescription,
+                StartDate = eventEntity.StartDate,
+                EndDate = eventEntity.EndDate,
+                Location = eventEntity.Location,
+            };
+            _eventRepositoryMock.Setup(e => e.GetByIdAsync(eventId))
+                .ReturnsAsync(eventEntity);
+            _mapperMock.Setup(m => m.Map<ViewEventDto>(eventEntity))
+            .Returns(viewEventDto);
+            // Act
+            var result = await _eventService.GetEventByIdAsync(eventId, CancellationToken.None);
+            // Assert
+            Assert.IsType<SuccessDataResult<ViewEventDto>>(result);
+            Assert.Equal(viewEventDto, result.Data); 
+ 
+        }
+
+        [Fact]
+        public async Task GetAllEventsAsync_Should_Return_ErrorDataResult_When_EventList_Is_Empty()
+        {
+            // Arrange
+            Expression<Func<Event, bool>> predicate = e => true;
+            _eventRepositoryMock.Setup(e => e.GetAllAsync(predicate))
+       .ReturnsAsync(new List<Event>()); // Boş liste
+
+            // Act
+            var result =await _eventService.GetAllEventsAsync(predicate,CancellationToken.None);
+            // Assert
+            Assert.IsType<ErrorDataResult<IEnumerable<ViewEventDto>>>(result);
+            Assert.Equal(Messages.EmptyEventList, result.Message);
+
+        }
+
+        [Fact]
+        public async Task GetAllEventsAsync_Should_Return_SuccessDataResult_When_EventList_Is_Not_Empty()
+        {
+            // Arrange
+            Expression<Func<Event, bool>> predicate = e => true;
+            var eventList= new List<Event>
+            {
+                new Event
+        {
+            Id = Guid.NewGuid(),
+            EventName = "Test Event 1",
+            StartDate = DateTimeOffset.UtcNow.AddDays(1),
+            EndDate = DateTimeOffset.UtcNow.AddDays(2),
+            Location = "Location 1",
+            OrganizerId = Guid.NewGuid(),
+            Timezone = "UTC"
+        },
+                new Event
+        {
+            Id = Guid.NewGuid(),
+            EventName = "Test Event 2",
+            StartDate = DateTimeOffset.UtcNow.AddDays(2),
+            EndDate = DateTimeOffset.UtcNow.AddDays(3),
+            Location = "Location 2",
+            OrganizerId = Guid.NewGuid(),
+            Timezone = "UTC"
+        }
+            };
+            var mappedEventList = eventList.Select(e => new ViewEventDto
+            {
+                EventName = e.EventName,
+                StartDate = e.StartDate,
+                EndDate = e.EndDate,
+                Location = e.Location,
+                Timezone = e.Timezone
+            });
+
+            _eventRepositoryMock.Setup(e => e.GetAllAsync(predicate))
+                .ReturnsAsync(eventList);
+
+            _mapperMock.Setup(m => m.Map<IEnumerable<ViewEventDto>>(eventList))
+                .Returns(mappedEventList);
+            // Act
+            var result = await _eventService.GetAllEventsAsync(predicate, CancellationToken.None);
+            // Assert
+            Assert.IsType<SuccessDataResult<IEnumerable<ViewEventDto>>>(result);
+            result.Data.Should().BeEquivalentTo(mappedEventList); // Koleksiyon içeriklerini karşılaştır
+
+        }
         #endregion
     }
 }

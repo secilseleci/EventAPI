@@ -23,8 +23,10 @@ namespace Infrastructure.Services
             if (isValidUser == false)  
                 return new ErrorResult(Messages.UserNotFound);
 
-            if (createEventDto.StartDate >= createEventDto.EndDate)
+            if (!IsDateRangeValid(createEventDto.StartDate, createEventDto.EndDate))
+            {
                 return new ErrorResult(Messages.InvalidDateRange);
+            }
 
             var eventEntity=_mapper.Map<Event>(createEventDto);
             if (eventEntity == null)  
@@ -68,7 +70,10 @@ namespace Infrastructure.Services
                 return new ErrorResult(Messages.UnauthorizedAccess);
 
             CompleteUpdate(eventEntity, updateEventDto);
-
+            if (!IsDateRangeValid(updateEventDto.StartDate, updateEventDto.EndDate))
+            {
+                return new ErrorResult(Messages.InvalidDateRange);
+            }
             var updateResult = await _eventRepository.UpdateAsync(eventEntity);
             return updateResult > 0
                 ? new SuccessResult(Messages.UpdateEventSuccess)
@@ -126,10 +131,11 @@ namespace Infrastructure.Services
         }
         public async Task<IDataResult<IEnumerable<ViewEventDto>>> GetEventListByDateRangeAsync( DateTimeOffset startDate, DateTimeOffset endDate, CancellationToken cancellationToken)
         {
-            if (startDate > endDate)
+            if (!IsDateRangeValid(startDate, endDate))
             {
                 return new ErrorDataResult<IEnumerable<ViewEventDto>>("Start date cannot be later than end date.");
             }
+
 
             var eventList = await _eventRepository.GetAllAsync(e => e.StartDate <= endDate && e.EndDate >= startDate);
 
@@ -170,11 +176,15 @@ namespace Infrastructure.Services
          ? new SuccessDataResult<int>(participantCount,Messages.ParticipantCountRetrievedSuccessfully)
          : new ErrorDataResult<int>(Messages.EventNotFound);
         }
-       
+
         #endregion
 
 
-        #region Helper Methods
+        #region Helper Methods 
+        private static bool IsDateRangeValid(DateTimeOffset startDate, DateTimeOffset endDate)
+        {
+            return startDate <= endDate; 
+        }
         private static void CompleteUpdate(Event eventEntity, UpdateEventDto updateEventDto)
         {
             eventEntity.EventName = updateEventDto.EventName;
@@ -184,9 +194,10 @@ namespace Infrastructure.Services
             eventEntity.Location = updateEventDto.Location;
             eventEntity.Timezone = updateEventDto.Timezone;
         }
+       
 
         #endregion
-        
+
 
 
 
