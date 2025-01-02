@@ -102,21 +102,21 @@ namespace Infrastructure.Services
         int page, int pageSize, CancellationToken cancellationToken)
         {
             var eventsWithPagination = await _eventRepository.GetAllEventsWithPaginationAsync(page, pageSize);
-
-            if (eventsWithPagination.Data.Any())
+            if (eventsWithPagination == null || eventsWithPagination.Data == null || !eventsWithPagination.Data.Any())
             {
-                return new SuccessDataResult<PaginationDto<ViewEventDto>>(
-                    new PaginationDto<ViewEventDto>
-                    {
-                        Data = _mapper.Map<IEnumerable<ViewEventDto>>(eventsWithPagination.Data),
-                        CurrentPage = eventsWithPagination.CurrentPage,
-                        TotalPages = eventsWithPagination.TotalPages,
-                        PageSize = eventsWithPagination.PageSize,
-                        TotalCount = eventsWithPagination.TotalCount
-                    });
+                return new ErrorDataResult<PaginationDto<ViewEventDto>>(Messages.EmptyEventList);
             }
+            
+            return new SuccessDataResult<PaginationDto<ViewEventDto>>(
+        new PaginationDto<ViewEventDto>
+        {
+            Data = _mapper.Map<IEnumerable<ViewEventDto>>(eventsWithPagination.Data),
+            CurrentPage = eventsWithPagination.CurrentPage,
+            TotalPages = eventsWithPagination.TotalPages,
+            PageSize = eventsWithPagination.PageSize,
+            TotalCount = eventsWithPagination.TotalCount
+        });
 
-            return new ErrorDataResult<PaginationDto<ViewEventDto>>(Messages.EmptyEventList);
         }
 
         public async Task<IDataResult<ViewEventWithParticipantsDto>> GetEventWithParticipantsAsync(Guid eventId, CancellationToken cancellationToken)

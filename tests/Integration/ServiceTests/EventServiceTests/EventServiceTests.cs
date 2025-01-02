@@ -642,6 +642,111 @@ namespace Integration.ServiceTests.EventServiceTests
             result.Data.Should().BeEquivalentTo(mappedEventList); // Koleksiyon içeriklerini karşılaştır
 
         }
+
+        [Fact]
+        public async Task GetAllEventsWithPaginationAsync_Should_Return_Error_When_EventsWithPagination_Is_Null()
+        {
+            // Arrange
+            var page = 1;
+            var pageSize = 10;
+
+            _eventRepositoryMock.Setup(r => r.GetAllEventsWithPaginationAsync(page, pageSize))
+                .ReturnsAsync((PaginationDto<Event>?)null);
+
+            // Act
+            var result = await _eventService.GetAllEventsWithPaginationAsync(page, pageSize, CancellationToken.None);
+
+            // Assert
+            Assert.IsType<ErrorDataResult<PaginationDto<ViewEventDto>>>(result);
+            Assert.Equal(Messages.EmptyEventList, result.Message);
+        }
+
+        [Fact]
+        public async Task GetAllEventsWithPaginationAsync_Should_Return_Error_When_EventsWithPaginationData_Is_Null()
+        {
+            // Arrange
+            var page = 1;
+            var pageSize = 10;
+
+            var paginationDto = new PaginationDto<Event>
+            {
+                Data = null,
+                CurrentPage = page,
+                TotalPages = 1,
+                PageSize = pageSize,
+                TotalCount = 0
+            };
+
+            _eventRepositoryMock.Setup(r => r.GetAllEventsWithPaginationAsync(page, pageSize))
+                .ReturnsAsync(paginationDto);
+
+            // Act
+            var result = await _eventService.GetAllEventsWithPaginationAsync(page, pageSize, CancellationToken.None);
+
+            // Assert
+            Assert.IsType<ErrorDataResult<PaginationDto<ViewEventDto>>>(result);
+            Assert.Equal(Messages.EmptyEventList, result.Message);
+        }
+
+    
+        [Fact]
+        public async Task GetAllEventsWithPaginationAsync_Should_Return_SuccessResult_When_Data_Is_Not_Empty()
+        {
+            // Arrange
+            var page = 1;
+            var pageSize = 5;
+
+            var eventList = new List<Event>
+    {
+        new Event { Id = Guid.NewGuid(), EventName = "Test Event 1", StartDate = DateTimeOffset.UtcNow, EndDate = DateTimeOffset.UtcNow.AddHours(2), Location = "Location 1", OrganizerId = Guid.NewGuid(), Timezone = "UTC" },
+        new Event { Id = Guid.NewGuid(), EventName = "Test Event 2", StartDate = DateTimeOffset.UtcNow.AddHours(3), EndDate = DateTimeOffset.UtcNow.AddHours(4), Location = "Location 2", OrganizerId = Guid.NewGuid(), Timezone = "UTC" }
+    };
+
+            var paginationDto = new PaginationDto<Event>
+            {
+                Data = eventList,
+                CurrentPage = page,
+                TotalPages = 1,
+                PageSize = pageSize,
+                TotalCount = 2
+            };
+
+            var mappedEventList = eventList.Select(e => new ViewEventDto
+            {
+                EventName = e.EventName,
+                StartDate = e.StartDate,
+                EndDate = e.EndDate,
+                Location = e.Location,
+                Timezone = e.Timezone
+            });
+
+            _eventRepositoryMock.Setup(r => r.GetAllEventsWithPaginationAsync(page, pageSize))
+                .ReturnsAsync(paginationDto);
+
+            _mapperMock.Setup(m => m.Map<IEnumerable<ViewEventDto>>(eventList))
+                .Returns(mappedEventList);
+
+            // Act
+            var result = await _eventService.GetAllEventsWithPaginationAsync(page, pageSize, CancellationToken.None);
+
+            // Assert
+            Assert.IsType<SuccessDataResult<PaginationDto<ViewEventDto>>>(result);
+            Assert.Collection(result.Data.Data,
+             item1 =>
+             {
+                 Assert.Equal("Test Event 1", item1.EventName);
+                 Assert.Equal("Location 1", item1.Location);
+             },
+             item2 =>
+             {
+                 Assert.Equal("Test Event 2", item2.EventName);
+                 Assert.Equal("Location 2", item2.Location);
+             });
+        }
+
+
+
         #endregion
     }
 }
+
