@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Core.Utilities.Results;
 using Infrastructure.Services;
+using Microsoft.Extensions.Logging;
 using Moq;
+using System;
 using System.Linq.Expressions;
 
 namespace Integration.ServiceTests.EventServiceTests
@@ -744,8 +746,104 @@ namespace Integration.ServiceTests.EventServiceTests
              });
         }
 
+        [Fact]
+        public async Task GetEventWithParticipantsAsync_Should_Return_EventNotFound_When_Event_Does_Not_Exist()
+        {
+            // Arrange
+            var eventId = Guid.NewGuid();
 
+            _eventRepositoryMock.Setup(e => e.GetEventWithParticipantsAsync(eventId))
+                .ReturnsAsync((Event)null);
 
+            // Act
+            var result = await _eventService.GetEventWithParticipantsAsync(eventId, CancellationToken.None);
+
+            // Assert
+            Assert.IsType<ErrorDataResult<ViewEventWithParticipantsDto>>(result);
+            Assert.Equal(Messages.EventNotFound, result.Message);
+        }
+        [Fact]
+        public async Task GetEventWithParticipantsAsync_Should_Return_ErrorDataResult_When_ParticipantsList_Is_Empty()
+        {
+            // Arrange
+            var eventId = Guid.NewGuid();
+            var eventEntity = new Event
+            {
+                Id = eventId,
+                EventName = "Test Event",
+                Location = "Test location",
+                EndDate = DateTimeOffset.UtcNow.AddHours(2),
+                StartDate = DateTimeOffset.UtcNow,
+                EventDescription = "A description for the test event",
+                Timezone = "UTC",
+                Participants = new List<Participant>()
+            };
+            _eventRepositoryMock.Setup(e => e.GetEventWithParticipantsAsync(eventId))
+                .ReturnsAsync(eventEntity);
+          
+            // Act
+            var result = await _eventService.GetEventWithParticipantsAsync(eventId, CancellationToken.None);
+
+            // Assert
+            Assert.IsType<ErrorDataResult<ViewEventWithParticipantsDto>>(result);
+            Assert.Equal(Messages.EmptyParticipantList, result.Message);
+
+        }
+
+        [Fact]
+        public async Task GetEventWithParticipantsAsync_Should_Return_SuccessDataResult_When_All_Conditions_Are_Met()
+        {
+            // Arrange
+            var eventId = Guid.NewGuid();
+            var eventEntity = new Event
+            {
+                Id = eventId,
+                EventName = "Test Event",
+                Location = "Test location",
+                EndDate = DateTimeOffset.UtcNow.AddHours(2),
+                StartDate = DateTimeOffset.UtcNow,
+                EventDescription = "A description for the test event",
+                Timezone = "UTC",
+                Participants = new List<Participant>
+                {
+                    new Participant
+                    {
+                        UserId = new Guid()
+                    },
+
+                }
+            };
+
+          
+            _eventRepositoryMock.Setup(e => e.GetEventWithParticipantsAsync(eventId))
+                .ReturnsAsync(eventEntity);
+            _mapperMock.Setup(m => m.Map<ViewEventWithParticipantsDto>(eventEntity))
+                .Returns(new ViewEventWithParticipantsDto{
+
+                 
+                    Id = eventId,
+                    EventName = eventEntity.EventName,
+                    EventDescription = eventEntity.EventDescription,
+                    StartDate = eventEntity.StartDate,
+                    EndDate = eventEntity.EndDate,
+                    Timezone = eventEntity.Timezone,
+                     Participants = eventEntity.Participants.Select(p => new ParticipantDto
+                     { 
+                         UserId = p.UserId
+                         
+                        
+                     }).ToList()
+                 
+            });
+            // Act
+            var result = await _eventService.GetEventWithParticipantsAsync(eventId, CancellationToken.None);
+
+            // Assert
+            Assert.IsType<SuccessDataResult<ViewEventWithParticipantsDto>>(result);
+            Assert.NotNull(result.Data);
+            Assert.Equal(eventEntity.EventName, result.Data.EventName);
+            Assert.Equal(eventEntity.Participants.Count, result.Data.Participants.Count);
+        }
         #endregion
     }
 }
