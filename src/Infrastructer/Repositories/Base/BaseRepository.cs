@@ -20,10 +20,15 @@ namespace Infrastructure.Repositories.Base
         public async Task<int> CreateAsync(T entity)
         {
             await dbSet.AddAsync(entity);
-            return await _dbContext.SaveChangesAsync();
+            var result = await _dbContext.SaveChangesAsync();
+
+            // Entity'yi detached duruma getir
+            _dbContext.Entry(entity).State = EntityState.Detached;
+
+            return result;
         }
-        
- 
+
+
         public async Task<int> DeleteAsync(Guid id)
         {
             var entity = await dbSet.FindAsync(id);

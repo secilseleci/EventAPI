@@ -8,11 +8,11 @@ namespace Core.DTOs.Event
         public Guid Id { get; set; }
 
         [Required]
-        [StringLength(50, MinimumLength = 3, ErrorMessage = "EventName must be between 3 and 50 characters.")]
-
+        [MinLength(5)]
         public string EventName { get; set; } = string.Empty;
         public string? EventDescription { get; set; }
         [Required]
+        [ValidDateRange]
         public DateTimeOffset StartDate { get; set; }
         [Required]
         public DateTimeOffset EndDate { get; set; }

@@ -13,6 +13,10 @@ namespace WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateEvent(CreateEventDto createEventDto, Guid userId)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState); // Hataları döndür
+            }
             var createEventResult = await _eventService.CreateEventAsync(createEventDto, userId, default);
             return HandleResponse(createEventResult);
         }
@@ -27,6 +31,10 @@ namespace WebUI.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateEvent(UpdateEventDto updateEventDto, Guid userId)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState); // Hataları döndür
+            }
             var updateEventResult = await _eventService.UpdateEventAsync(updateEventDto, userId, default);
             return HandleResponse(updateEventResult);
         }

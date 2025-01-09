@@ -23,11 +23,6 @@ namespace Infrastructure.Services
             if (isValidUser == false)  
                 return new ErrorResult(Messages.UserNotFound);
 
-            if (!IsDateRangeValid(createEventDto.StartDate, createEventDto.EndDate))
-            {
-                return new ErrorResult(Messages.InvalidDateRange);
-            }
-
             var eventEntity=_mapper.Map<Event>(createEventDto);
             if (eventEntity == null)  
                 return new ErrorResult(Messages.CreateEventError); 
@@ -70,10 +65,7 @@ namespace Infrastructure.Services
                 return new ErrorResult(Messages.UnauthorizedAccess);
 
             CompleteUpdate(eventEntity, updateEventDto);
-            if (!IsDateRangeValid(updateEventDto.StartDate, updateEventDto.EndDate))
-            {
-                return new ErrorResult(Messages.InvalidDateRange);
-            }
+            
             var updateResult = await _eventRepository.UpdateAsync(eventEntity);
             return updateResult > 0
                 ? new SuccessResult(Messages.UpdateEventSuccess)
@@ -181,11 +173,7 @@ namespace Infrastructure.Services
 
 
         #region Helper Methods 
-        private static bool IsDateRangeValid(DateTimeOffset startDate, DateTimeOffset endDate)
-        {
-            return startDate <= endDate; 
-        }
-        private static void CompleteUpdate(Event eventEntity, UpdateEventDto updateEventDto)
+         private static void CompleteUpdate(Event eventEntity, UpdateEventDto updateEventDto)
         {
             eventEntity.EventName = updateEventDto.EventName;
             eventEntity.EventDescription = updateEventDto.EventDescription;
