@@ -177,25 +177,25 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("99e05c72-06ed-4392-811d-2a45bb5ba7a7"),
+                            Id = new Guid("2e44eccb-cf69-4af7-b581-b472a2d23d05"),
                             EventId = new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"),
                             UserId = new Guid("b12f1fc3-a9e7-4b53-90a7-0b2e1e7d3a12")
                         },
                         new
                         {
-                            Id = new Guid("50a7788d-40e8-4792-b857-99097bca99a1"),
+                            Id = new Guid("e3e8de9d-acaa-4657-a84c-7ff76c5d1fae"),
                             EventId = new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"),
                             UserId = new Guid("9c24e2f7-52b1-4f78-8dce-3ae146b7f9d5")
                         },
                         new
                         {
-                            Id = new Guid("cad9d150-3e65-4a33-820c-0ffbb26cab2a"),
+                            Id = new Guid("1576c6bb-d7d2-4e65-b9cb-951381c2658a"),
                             EventId = new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"),
                             UserId = new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db")
                         },
                         new
                         {
-                            Id = new Guid("5bc06815-6ffd-4d2c-9f9b-66117cea6576"),
+                            Id = new Guid("82f31305-2b32-4d6d-b53c-7b63ef1cd9f7"),
                             EventId = new Guid("5d7e2f23-49d2-4e7e-9517-3a14c67e36a9"),
                             UserId = new Guid("9c24e2f7-52b1-4f78-8dce-3ae146b7f9d5")
                         });

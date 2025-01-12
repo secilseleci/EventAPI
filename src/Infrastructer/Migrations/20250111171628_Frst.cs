@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Frst : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -144,10 +144,10 @@ namespace Infrastructure.Migrations
                 columns: new[] { "Id", "EventId", "UserId" },
                 values: new object[,]
                 {
-                    { new Guid("50a7788d-40e8-4792-b857-99097bca99a1"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), new Guid("9c24e2f7-52b1-4f78-8dce-3ae146b7f9d5") },
-                    { new Guid("5bc06815-6ffd-4d2c-9f9b-66117cea6576"), new Guid("5d7e2f23-49d2-4e7e-9517-3a14c67e36a9"), new Guid("9c24e2f7-52b1-4f78-8dce-3ae146b7f9d5") },
-                    { new Guid("99e05c72-06ed-4392-811d-2a45bb5ba7a7"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), new Guid("b12f1fc3-a9e7-4b53-90a7-0b2e1e7d3a12") },
-                    { new Guid("cad9d150-3e65-4a33-820c-0ffbb26cab2a"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db") }
+                    { new Guid("1576c6bb-d7d2-4e65-b9cb-951381c2658a"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), new Guid("d8a490c9-ef65-4c6b-9d0a-4d55f54307db") },
+                    { new Guid("2e44eccb-cf69-4af7-b581-b472a2d23d05"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), new Guid("b12f1fc3-a9e7-4b53-90a7-0b2e1e7d3a12") },
+                    { new Guid("82f31305-2b32-4d6d-b53c-7b63ef1cd9f7"), new Guid("5d7e2f23-49d2-4e7e-9517-3a14c67e36a9"), new Guid("9c24e2f7-52b1-4f78-8dce-3ae146b7f9d5") },
+                    { new Guid("e3e8de9d-acaa-4657-a84c-7ff76c5d1fae"), new Guid("81e4e565-7bea-4f4f-816a-def22c28f42f"), new Guid("9c24e2f7-52b1-4f78-8dce-3ae146b7f9d5") }
                 });
 
             migrationBuilder.CreateIndex(

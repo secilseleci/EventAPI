@@ -48,5 +48,20 @@ namespace Integration.Fixtures
                 DataContext.Dispose();
             }
         }
+        public async Task ClearDatabaseAsync()
+        {
+            var entityTypes = DataContext.Model.GetEntityTypes()
+                .Select(e => e.GetTableName())
+                .Distinct()
+                .ToList();
+
+            foreach (var table in entityTypes)
+            {
+                await DataContext.Database.ExecuteSqlRawAsync($"DELETE FROM [{table}]");
+            }
+            await DataContext.SaveChangesAsync();
+        }
+
+
     }
 }

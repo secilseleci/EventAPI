@@ -70,7 +70,17 @@ internal static class EventHarness
         }
 
 
-
+        public static UpdateEventDto ConvertEventToUpdateEventDto(this TestBase testBase, Event eventEntity)
+        {
+            return new UpdateEventDto
+            {Id= eventEntity.Id,
+                EventName = eventEntity.EventName,
+                Location = eventEntity.Location,
+                StartDate = eventEntity.StartDate,
+                EndDate = eventEntity.EndDate,
+                Timezone = eventEntity.Timezone,
+            };
+        }
 
 
 

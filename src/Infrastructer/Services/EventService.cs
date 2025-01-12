@@ -123,10 +123,10 @@ namespace Infrastructure.Services
         }
         public async Task<IDataResult<IEnumerable<ViewEventDto>>> GetEventListByDateRangeAsync( DateTimeOffset startDate, DateTimeOffset endDate, CancellationToken cancellationToken)
         {
-            if (!IsDateRangeValid(startDate, endDate))
-            {
-                return new ErrorDataResult<IEnumerable<ViewEventDto>>("Start date cannot be later than end date.");
-            }
+            //if (!IsDateRangeValid(startDate, endDate))
+            //{
+            //    return new ErrorDataResult<IEnumerable<ViewEventDto>>("Start date cannot be later than end date.");
+            //}
 
 
             var eventList = await _eventRepository.GetAllAsync(e => e.StartDate <= endDate && e.EndDate >= startDate);

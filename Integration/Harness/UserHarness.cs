@@ -23,15 +23,12 @@ namespace Integration.Harness
 
             try
             {
-                Console.WriteLine($"Attempting to create user: {userToAdd.UserName}, {userToAdd.Email}");
                 var registerResult = await userRepository.CreateAsync(userToAdd);
-                Console.WriteLine($"CreateAsync result: {registerResult}");
                 AssertRegisterResult(assertSuccess, registerResult);
                 return userToAdd;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while creating user: {ex.Message}");
                 throw;
             }
         }
