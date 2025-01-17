@@ -64,7 +64,8 @@ namespace Infrastructure.Services
 
             if (eventEntity.OrganizerId != userId)
                 return new ErrorResult(Messages.UnauthorizedAccess);
-
+            if (IsEventUnchanged(eventEntity, updateEventDto))
+                return new ErrorResult(Messages.UpdateEventError);
             CompleteUpdate(eventEntity, updateEventDto);
             
             var updateResult = await _eventRepository.UpdateAsync(eventEntity);
@@ -187,7 +188,16 @@ namespace Infrastructure.Services
             eventEntity.Location = updateEventDto.Location;
             eventEntity.Timezone = updateEventDto.Timezone;
         }
-       
+        private static bool IsEventUnchanged(Event eventEntity, UpdateEventDto updateEventDto)
+        {
+            return eventEntity.EventName == updateEventDto.EventName &&
+                   eventEntity.EventDescription == updateEventDto.EventDescription &&
+                   eventEntity.StartDate == updateEventDto.StartDate &&
+                   eventEntity.EndDate == updateEventDto.EndDate &&
+                   eventEntity.Location == updateEventDto.Location &&
+                   eventEntity.Timezone == updateEventDto.Timezone;
+        }
+
 
         #endregion
 

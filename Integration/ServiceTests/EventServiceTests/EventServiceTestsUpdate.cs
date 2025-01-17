@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using Infrastructure.Services;
-using Microsoft.EntityFrameworkCore;
-using Xunit;
 
 namespace Integration.ServiceTests.EventServiceTestsUpdate
 {
@@ -25,16 +23,7 @@ namespace Integration.ServiceTests.EventServiceTestsUpdate
         public async Task UpdateEventAsync_Should_Return_EventNotFound_When_Event_Does_Not_Exist()
         {
             // Arrange
-            var organizer = new User
-            {
-                Id = Guid.NewGuid(),
-                FullName = "Test Organizer",
-                Email = "organizer@example.com",
-                UserName = "Organizer123",
-                Password = "password123"
-            };
-            await _userRepository.CreateAsync(organizer);
-
+           
             var updateEventDto = new UpdateEventDto
             {
                 Id = Guid.NewGuid(), // Sistemde olmayan ID
@@ -46,9 +35,10 @@ namespace Integration.ServiceTests.EventServiceTestsUpdate
                 Timezone = "UTC"
             };
 
-            // Act
-            var result = await _eventService.UpdateEventAsync(updateEventDto, organizer.Id, CancellationToken.None);
+            var randomUserId = Guid.NewGuid(); 
 
+            // Act
+            var result = await _eventService.UpdateEventAsync(updateEventDto, randomUserId, CancellationToken.None);
             // Assert
             Assert.IsType<ErrorResult>(result);
             Assert.Equal(Messages.EventNotFound, result.Message);
@@ -58,7 +48,7 @@ namespace Integration.ServiceTests.EventServiceTestsUpdate
         public async Task UpdateEventAsync_Should_Return_UnauthorizedAccess_When_User_Is_Not_Organizer()
         {
             // Arrange
-            var invalidUser = await this.RegisterAndGetRandomUserAsync();
+            var unauthorizedUser = await this.RegisterAndGetRandomUserAsync();
             var randomEvent = await this.RegisterAndGetRandomEventAsync(); // Rastgele bir event oluşturuluyor
 
             var eventInDb = await _eventRepository.GetByIdAsync(randomEvent.Id);
@@ -77,7 +67,7 @@ namespace Integration.ServiceTests.EventServiceTestsUpdate
             };
 
             // Act
-            var result = await _eventService.UpdateEventAsync(updateEventDto, invalidUser.Id, CancellationToken.None);
+            var result = await _eventService.UpdateEventAsync(updateEventDto, unauthorizedUser.Id, CancellationToken.None);
 
             // Assert
             Assert.IsType<ErrorResult>(result);
@@ -85,19 +75,54 @@ namespace Integration.ServiceTests.EventServiceTestsUpdate
         }
 
         [Fact]
-        public async Task UpdateEventAsync_Should_Return_SuccessResult_When_All_Conditions_Are_Met()
+        public async Task UpdateEventAsync_Should_Return_Success_When_Update_Is_Successful()
         {
 
             // Arrange
+            var randomEvent= await this.RegisterAndGetRandomEventAsync();
+            var updateEventDto=new UpdateEventDto {
+                Id = randomEvent.Id,
+                EventName = "Updated Event Name",
+                EventDescription = "Updated Description",
+                StartDate = randomEvent.StartDate.AddDays(1),
+                EndDate = randomEvent.EndDate.AddDays(1),
+                Location = "Updated Location",
+                Timezone = randomEvent.Timezone
+            };
+
+            // Act
+            var result = await _eventService.UpdateEventAsync(updateEventDto, randomEvent.OrganizerId, CancellationToken.None);
+            // Assert
+            Assert.IsType<SuccessResult>(result);
+            Assert.Equal(Messages.UpdateEventSuccess, result.Message);
+        }
+        [Fact]
+        public async Task UpdateEventAsync_Should_Return_Error_When_Update_Fails()
+        {
+            // Arrange
+            var randomEvent = await this.RegisterAndGetRandomEventAsync();
+             var updateEventDto = new UpdateEventDto
+            {
+                Id = randomEvent.Id,
+                EventName =  randomEvent.EventName,
+                 EventDescription = randomEvent.EventDescription,
+                StartDate = randomEvent.StartDate,
+                EndDate = randomEvent.EndDate,
+                Location = randomEvent.Location,
+                Timezone = randomEvent.Timezone
+            };
+
  
             // Act
- 
+            var result = await _eventService.UpdateEventAsync(updateEventDto, randomEvent.OrganizerId, CancellationToken.None);
+
             // Assert
-           
+            Assert.IsType<ErrorResult>(result);
+            Assert.Equal(Messages.UpdateEventError, result.Message);
         }
 
-            
-     
+
+
 
 
         #endregion
