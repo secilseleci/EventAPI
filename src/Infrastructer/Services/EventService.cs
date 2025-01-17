@@ -6,6 +6,7 @@ using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Utilities.Constants;
 using Core.Utilities.Results;
+using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 
 namespace Infrastructure.Services
@@ -121,21 +122,18 @@ namespace Infrastructure.Services
                 ? new ErrorDataResult<ViewEventWithParticipantsDto>(Messages.EmptyParticipantList)
                 : new SuccessDataResult<ViewEventWithParticipantsDto>(_mapper.Map<ViewEventWithParticipantsDto>(eventEntity));
         }
-        public async Task<IDataResult<IEnumerable<ViewEventDto>>> GetEventListByDateRangeAsync( DateTimeOffset startDate, DateTimeOffset endDate, CancellationToken cancellationToken)
+        public async Task<IDataResult<IEnumerable<ViewEventDto>>> GetEventListByDateRangeAsync(DateRangeDto dateRangeDto, CancellationToken cancellationToken)
         {
-            //if (!IsDateRangeValid(startDate, endDate))
-            //{
-            //    return new ErrorDataResult<IEnumerable<ViewEventDto>>("Start date cannot be later than end date.");
-            //}
+            var validationContext = new ValidationContext(dateRangeDto);
+            Validator.ValidateObject(dateRangeDto, validationContext, validateAllProperties: true);
 
-
-            var eventList = await _eventRepository.GetAllAsync(e => e.StartDate <= endDate && e.EndDate >= startDate);
+            var eventList = await _eventRepository.GetAllAsync(e => e.StartDate <= dateRangeDto.EndDate && e.EndDate >= dateRangeDto.StartDate);
 
             return eventList is not null && eventList.Any()
-                   ? new SuccessDataResult<IEnumerable<ViewEventDto>>(_mapper.Map<IEnumerable<ViewEventDto>>(eventList), Messages.EventsRetrievedSuccessfully)
-                   : new ErrorDataResult<IEnumerable<ViewEventDto>>(Messages.EmptyEventList);
-
+                ? new SuccessDataResult<IEnumerable<ViewEventDto>>(_mapper.Map<IEnumerable<ViewEventDto>>(eventList), Messages.EventsRetrievedSuccessfully)
+                : new ErrorDataResult<IEnumerable<ViewEventDto>>(Messages.EmptyEventList);
         }
+
         public async Task<IDataResult<IEnumerable<ViewEventDto>>> GetOrganizedEventListForUserAsync(Guid userId, CancellationToken cancellationToken)
         {
             var userExists=await _userService.IsUserValidAsync(userId, cancellationToken);
@@ -145,7 +143,7 @@ namespace Infrastructure.Services
             
             var eventList = await _eventRepository.GetAllAsync(e => e.OrganizerId == userId);
             return eventList is not null && eventList.Any()
-               ? new SuccessDataResult<IEnumerable<ViewEventDto>>(_mapper.Map<IEnumerable<ViewEventDto>>(eventList))
+               ? new SuccessDataResult<IEnumerable<ViewEventDto>>(_mapper.Map<IEnumerable<ViewEventDto>>(eventList), Messages.EventsRetrievedSuccessfully)
                : new ErrorDataResult<IEnumerable<ViewEventDto>>(Messages.EmptyEventList);
         }
         public async Task<IDataResult<IEnumerable<ViewEventDto>>> GetParticipatedEventListForUserAsync(Guid userId, CancellationToken cancellationToken)
@@ -156,17 +154,24 @@ namespace Infrastructure.Services
 
             var eventList = await _eventRepository.GetAllAsync(e => e.Participants.Any(p => p.UserId == userId));
             return eventList is not null && eventList.Any()
-               ? new SuccessDataResult<IEnumerable<ViewEventDto>>(_mapper.Map<IEnumerable<ViewEventDto>>(eventList))
+               ? new SuccessDataResult<IEnumerable<ViewEventDto>>(_mapper.Map<IEnumerable<ViewEventDto>>(eventList), Messages.EventsRetrievedSuccessfully)
                : new ErrorDataResult<IEnumerable<ViewEventDto>>(Messages.EmptyEventList);
 
         }
         public async Task<IDataResult<int>> GetParticipantCountForEventAsync(Guid eventId, CancellationToken cancellationToken)
         {
+            var eventExists = await _eventRepository.GetByIdAsync(eventId);
+            if (eventExists==null)
+                return new ErrorDataResult<int>(Messages.EventNotFound);
+
             var participantCount = await _eventRepository.GetParticipantCountAsync(eventId);
 
-            return participantCount >= 0
-         ? new SuccessDataResult<int>(participantCount,Messages.ParticipantCountRetrievedSuccessfully)
-         : new ErrorDataResult<int>(Messages.EventNotFound);
+            return new SuccessDataResult<int>(
+        participantCount,
+        participantCount > 0
+            ? Messages.ParticipantCountRetrievedSuccessfully  
+            : Messages.ParticipantNotFound  
+    );
         }
 
         #endregion

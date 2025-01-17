@@ -82,11 +82,12 @@ namespace WebUI.Controllers
         }
 
         [HttpGet("date-events")]
-        public async Task<IActionResult> GetEventListByDateRange( [FromQuery] DateTimeOffset startDate, [FromQuery] DateTimeOffset endDate)
+        public async Task<IActionResult> GetEventListByDateRange([FromQuery] DateRangeDto dateRangeDto)
         {
-            var eventResult = await _eventService.GetEventListByDateRangeAsync( startDate,endDate, default);
+            var eventResult = await _eventService.GetEventListByDateRangeAsync(dateRangeDto, default);
             return HandleResponse(eventResult);
         }
+
 
         [HttpGet("participants/count/{eventId}")]
         public async Task<IActionResult> GetParticipantCountForEvent([FromRoute] Guid eventId)

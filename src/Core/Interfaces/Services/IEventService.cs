@@ -19,7 +19,7 @@ namespace Core.Interfaces.Services
         Task<IDataResult<ViewEventWithParticipantsDto>> GetEventWithParticipantsAsync(Guid eventId, CancellationToken cancellationToken);
         Task<IDataResult<IEnumerable<ViewEventDto>>> GetOrganizedEventListForUserAsync(Guid userId, CancellationToken cancellationToken);
         Task<IDataResult<IEnumerable<ViewEventDto>>> GetParticipatedEventListForUserAsync(Guid userId, CancellationToken cancellationToken);
-        Task<IDataResult<IEnumerable<ViewEventDto>>> GetEventListByDateRangeAsync(DateTimeOffset startDate, DateTimeOffset endDate, CancellationToken cancellationToken);
+        Task<IDataResult<IEnumerable<ViewEventDto>>> GetEventListByDateRangeAsync(DateRangeDto dateRangeDto, CancellationToken cancellationToken);
         Task<IDataResult<int>> GetParticipantCountForEventAsync(Guid eventId, CancellationToken cancellationToken);
 
     }
