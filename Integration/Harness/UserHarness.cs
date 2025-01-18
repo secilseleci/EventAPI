@@ -11,7 +11,7 @@ namespace Integration.Harness
         internal static async Task<User> RegisterAndGetRandomUserAsync(this TestBase testBase, User? customUser = null, bool assertSuccess = true)
         {
             var userRepository = testBase.ApplicationFixture.Services.GetRequiredService<IUserRepository>();
-            var userCounter = Guid.NewGuid().ToString("N"); // Benzersizliği artırmak için "N" formatı
+            var userCounter = Guid.NewGuid().ToString("N");  
 
             var userToAdd = customUser ?? new User
             {

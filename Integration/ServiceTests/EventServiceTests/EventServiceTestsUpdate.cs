@@ -5,18 +5,10 @@ namespace Integration.ServiceTests.EventServiceTestsUpdate
 {
     public class EventServiceTestsUpdate : TestBase
     {
-        private readonly EventService _eventService;
-        private readonly IEventRepository _eventRepository;
-        private readonly IUserRepository _userRepository;
+         private readonly IEventRepository _eventRepository;
         public EventServiceTestsUpdate(ApplicationFixture applicationFixture) : base(applicationFixture)
-        {
-            _userRepository = ApplicationFixture.Services.GetRequiredService<IUserRepository>();
-
-            _eventRepository = ApplicationFixture.Services.GetRequiredService<IEventRepository>();
-            var userService = ApplicationFixture.Services.GetRequiredService<IUserService>();
-            var mapper = ApplicationFixture.Services.GetRequiredService<IMapper>();
-            _eventService = new EventService(_eventRepository, mapper, userService);
-        }
+         {}
+          
 
         #region UpdateEvent Tests
         [Fact]
@@ -26,7 +18,7 @@ namespace Integration.ServiceTests.EventServiceTestsUpdate
            
             var updateEventDto = new UpdateEventDto
             {
-                Id = Guid.NewGuid(), // Sistemde olmayan ID
+                Id = Guid.NewGuid(),  
                 EventName = "Updated Event Name",
                 EventDescription = "Updated Description",
                 StartDate = DateTimeOffset.UtcNow,
@@ -38,7 +30,7 @@ namespace Integration.ServiceTests.EventServiceTestsUpdate
             var randomUserId = Guid.NewGuid(); 
 
             // Act
-            var result = await _eventService.UpdateEventAsync(updateEventDto, randomUserId, CancellationToken.None);
+            var result = await EventService.UpdateEventAsync(updateEventDto, randomUserId, CancellationToken.None);
             // Assert
             Assert.IsType<ErrorResult>(result);
             Assert.Equal(Messages.EventNotFound, result.Message);
@@ -49,12 +41,8 @@ namespace Integration.ServiceTests.EventServiceTestsUpdate
         {
             // Arrange
             var unauthorizedUser = await this.RegisterAndGetRandomUserAsync();
-            var randomEvent = await this.RegisterAndGetRandomEventAsync(); // Rastgele bir event oluşturuluyor
+            var randomEvent = await this.RegisterAndGetRandomEventAsync(); 
 
-            var eventInDb = await _eventRepository.GetByIdAsync(randomEvent.Id);
-            Assert.NotNull(eventInDb);
-
-            
             var updateEventDto = new UpdateEventDto
             {
                 Id = randomEvent.Id,
@@ -67,7 +55,7 @@ namespace Integration.ServiceTests.EventServiceTestsUpdate
             };
 
             // Act
-            var result = await _eventService.UpdateEventAsync(updateEventDto, unauthorizedUser.Id, CancellationToken.None);
+            var result = await EventService.UpdateEventAsync(updateEventDto, unauthorizedUser.Id, CancellationToken.None);
 
             // Assert
             Assert.IsType<ErrorResult>(result);
@@ -91,7 +79,7 @@ namespace Integration.ServiceTests.EventServiceTestsUpdate
             };
 
             // Act
-            var result = await _eventService.UpdateEventAsync(updateEventDto, randomEvent.OrganizerId, CancellationToken.None);
+            var result = await EventService.UpdateEventAsync(updateEventDto, randomEvent.OrganizerId, CancellationToken.None);
             // Assert
             Assert.IsType<SuccessResult>(result);
             Assert.Equal(Messages.UpdateEventSuccess, result.Message);
@@ -101,11 +89,12 @@ namespace Integration.ServiceTests.EventServiceTestsUpdate
         {
             // Arrange
             var randomEvent = await this.RegisterAndGetRandomEventAsync();
-             var updateEventDto = new UpdateEventDto
+             
+            var updateEventDto = new UpdateEventDto
             {
                 Id = randomEvent.Id,
                 EventName =  randomEvent.EventName,
-                 EventDescription = randomEvent.EventDescription,
+                EventDescription = randomEvent.EventDescription,
                 StartDate = randomEvent.StartDate,
                 EndDate = randomEvent.EndDate,
                 Location = randomEvent.Location,
@@ -114,7 +103,7 @@ namespace Integration.ServiceTests.EventServiceTestsUpdate
 
  
             // Act
-            var result = await _eventService.UpdateEventAsync(updateEventDto, randomEvent.OrganizerId, CancellationToken.None);
+            var result = await EventService.UpdateEventAsync(updateEventDto, randomEvent.OrganizerId, CancellationToken.None);
 
             // Assert
             Assert.IsType<ErrorResult>(result);

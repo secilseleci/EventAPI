@@ -1,10 +1,8 @@
-﻿using Infrastructure.Services;
-
+﻿ 
 namespace Integration.ServiceTests.UserServiceTests
 {
     public class UserServiceTests : TestBase
     {
-        private readonly UserService _userService;
 
         public UserServiceTests(ApplicationFixture applicationFixture) : base(applicationFixture)
         {
