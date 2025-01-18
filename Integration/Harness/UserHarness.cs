@@ -21,16 +21,12 @@ namespace Integration.Harness
                 Email = $"user{userCounter}@example.com"
             };
 
-            try
-            {
+          
                 var registerResult = await userRepository.CreateAsync(userToAdd);
                 AssertRegisterResult(assertSuccess, registerResult);
                 return userToAdd;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+           
+             
         }
         private static void AssertRegisterResult(bool assertSuccess, int registerResult)
         {

@@ -5,8 +5,7 @@ internal static class EventHarness
         internal static async Task<Event> RegisterAndGetRandomEventAsync(this TestBase testBase, bool assertSuccess = true)
         {
             var eventRepository=testBase.ApplicationFixture.Services.GetService<IEventRepository>();
-            var userRepository = testBase.ApplicationFixture.Services.GetService<IUserRepository>();
-            
+             
             var organizer = await testBase.RegisterAndGetRandomUserAsync();
             var eventCounter = Guid.NewGuid().ToString()[..5];
 
@@ -44,17 +43,7 @@ internal static class EventHarness
                 Timezone = "UTC"
             };
         }
-        public static ViewEventDto ConvertEventToViewEventDto(this TestBase testBase, Event eventEntity)
-    {
-        return new ViewEventDto
-        {
-            EventName = eventEntity.EventName,
-            Location = eventEntity.Location,
-            StartDate = eventEntity.StartDate,
-            EndDate = eventEntity.EndDate,
-            Timezone = eventEntity.Timezone,
-        };
-    }
+     
         internal static UpdateEventDto CreateRandomUpdateEventDto(this TestBase testBase, Event eventEntity)
         {
             return new UpdateEventDto
@@ -69,19 +58,7 @@ internal static class EventHarness
             };
         }
 
-
-        public static UpdateEventDto ConvertEventToUpdateEventDto(this TestBase testBase, Event eventEntity)
-        {
-            return new UpdateEventDto
-            {Id= eventEntity.Id,
-                EventName = eventEntity.EventName,
-                Location = eventEntity.Location,
-                StartDate = eventEntity.StartDate,
-                EndDate = eventEntity.EndDate,
-                Timezone = eventEntity.Timezone,
-            };
-        }
-
+ 
 
 
 
