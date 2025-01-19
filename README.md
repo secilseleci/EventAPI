@@ -10,6 +10,63 @@ This project is modular and adheres to clean architecture principles. Below is a
 - API: Provides endpoints and request handling.
 - Tests: Includes unit and integration tests for ensuring functionality.
 
+#API Methods
+Below is a detailed list of the available service methods in the EventAPI project:
+
+##Event Service
+###CreateEventAsync
+Creates a new event for the specified organizer.
+
+###DeleteEventAsync
+Deletes an event if the user is the organizer.
+
+###UpdateEventAsync
+Updates an existing event's details.
+
+###GetAllEventsAsync
+Retrieves all events based on a given filter.
+
+###GetEventByIdAsync
+Fetches the details of a specific event by its ID.
+
+###GetAllEventsWithPaginationAsync
+Returns paginated events with metadata.
+
+###GetEventWithParticipantsAsync
+Retrieves event details along with participants.
+
+###GetEventListByDateRangeAsync
+Fetches events that fall within a specific date range.
+
+###GetOrganizedEventListForUserAsync
+Lists all events organized by a specific user.
+
+###GetParticipatedEventListForUserAsync
+Lists events where the user is a participant.
+
+###GetParticipantCountForEventAsync
+Returns the count of participants for a specific event.
+
+##Invitation Service
+###GetReceivedInvitationsAsync
+Lists invitations received by a specific user.
+
+###GetSentInvitationsAsync
+Lists invitations sent by a specific organizer.
+
+###GetSingleInvitationAsync
+Fetches details of a specific invitation by event ID and receiver ID.
+
+###SendInvitationAsync
+Sends invitations to multiple users for a specific event.
+
+###ParticipateInvitationAsync
+Allows a user to accept an invitation for an event.
+
+##User Service
+###IsUserValidAsync
+Checks if a user exists in the system.
+
 #Running the Project Locally
 Follow these steps to set up and run the API locally:
 
